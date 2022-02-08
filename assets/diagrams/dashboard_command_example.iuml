@@ -2,20 +2,20 @@
 participant "Hedgehog" as A
 participant "Pololu" as B
 group Position [stream packet]
-    A-> B: 0x47 [send position]
-    activate B
-    B --> A: {x,y,z}
-    deactivate B
+A-> B: 0x47 {x,y,z}
+activate B
+B --> A: 0x48 [I am ready]
+deactivate B
 end
 
 group Commande [Request/Response packet]
-    B -> A: 0x48 [I am ready]
-    activate B
-    A -> B: 0x4a {data}
-    deactivate B
-    B -> A: 0x48 [I am ready]
-    activate B
-    A -> B: 0x4a {data}
-    deactivate B
+A -> B: 0x4a {data}
+activate B
+B -> A: 0x4a [ACK]
+deactivate B
+A -> B: 0x4a {data}
+activate B
+B -> A: 0x4a [ACK]
+deactivate B
 end
 @enduml
