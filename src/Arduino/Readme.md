@@ -1,4 +1,4 @@
-## How communication between Marvelmind Hedgehog and Pololu Zumo works (to be written)
+## How communication between Marvelmind Hedgehog and Pololu Zumo works
 
 ### Marvel protocol for streaming
 ![dashboard_command_example](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/chletes/IMTA-PS5-EssaimRobots/main/assets/diagrams/dashboard_command_example.iuml)
