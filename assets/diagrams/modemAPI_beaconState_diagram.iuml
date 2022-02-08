@@ -1,0 +1,33 @@
+@startuml dashboard_command_example;
+actor User
+participant "main.c" as A
+participant "modem.c" as B
+
+A -> B: createMarvelmindModem()
+
+B -> A: *modem
+A -> B: startMarvelmindModem(*modem)
+create MarvelMindThread_ as D
+B -> D
+hnote over D: Waiting for request
+
+group Beacon State
+User -> A : Ask beacon state
+A -> A: trySendCommand(*modem, cmd, beaconAddress);
+A -> B: startGetBeaconState(*modem, beaconAddress, &CallBackFunction);
+B -> B: planRequest(&modem->beaconState.rq, beaconAddress, &CallBackFunction);
+== Request created ==
+D -> D: getBeaconState(tty,&modem->beaconState);
+activate D
+D -> D: prepareReadRequest(beaconState->rq.address, MM_DCODE_GET_BEACON_STATE, accessMode, buffer);
+D -> D: sendRequestPacket(tty, &buffer, sentPacketSize)
+D -> D: receiveAnswerPacket(tty, accessMode, buffer, 8);
+D -> D: checkReceivedPacket(buffer, receivedPacketSize);
+deactivate D
+D -> D: requestFinish(&modem->beaconState.rq, resultCode, (void *) &modem->beaconState);
+activate D
+D -> A: processBeaconStateReply(beaconState data)
+deactivate D
+A -> User : beacon state
+end
+@enduml
