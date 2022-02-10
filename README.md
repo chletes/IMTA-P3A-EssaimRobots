@@ -32,7 +32,7 @@ IMT Atlantique 3rd year project - Localization system for a swarm of mobile robo
 	- `ModemAPI` : Folder containing the API implementation 
 		- `original` : original code (from Marvelmind's web site)
 		- `ours` : our implementation
-- `assets' : Folder containing images and diagrams used in readmes. 
+- `assets` : Folder containing images and diagrams used in readmes. 
 
 ## Communication chain 
 
