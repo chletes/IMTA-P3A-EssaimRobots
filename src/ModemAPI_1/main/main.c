@@ -1,24 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <signal.h>
-#endif // WIN32
-#include "../modem/modem.h"
-//#include "main.h"
+#include "main.h"
 
 uint32_t requestRepeatsCount = 1;
-
-#define CMD_STATE 0
-#define CMD_SLEEP 1
-#define CMD_DEEPSLEEP 2
-#define CMD_WAKE 3
-
-bool terminateProgram = false;
 
 #ifdef WIN32
 BOOL CtrlHandler( DWORD fdwCtrlType ){
@@ -117,34 +99,27 @@ static void trySendCommand(struct MarvelmindModem *modem, uint8_t cmd, uint8_t a
     }
 }
 
-int menuPrincipal(){
-    int valor;
-    printf("Choisisez une option pour continuer, puis appuyez ENTER:\n \
-    \t 1. Retrouver l'etat d'une balise \n \
-    \t 2. Wake balises \n \
-    \t 3. Sleep balises \n \
-    \t 4. Send command \n \
-    \t *N'importe quel numéro pour sortir...*\n \
-    Option choisie: ");
-    scanf("%d", &valor);
-    return valor;
+int stopModemThread(struct MarvelmindModem * modem){
+    printf("* Stopping modem...\n");
+    stopMarvelmindModem (modem);
+    destroyMarvelmindModem (modem);
 }
 
 int main(int argc, char *argv[]){
-    
-    const char * ttyFileName= DEFAULT_TTY_FILENAME;
     int beaconAddress = -1;
     uint8_t cmd = -1;
+    printf("* Creating modem...\n");
 
-    // Init
-    struct MarvelmindModem * modem=createMarvelmindModem ();
+    struct MarvelmindModem * modem = createMarvelmindModem ();
     if (modem==NULL){
         printf("Error: Unable to create MarvelmindModem");
-        return -1;
     }
-    modem->ttyFileName=ttyFileName;
-    modem->verbose=true; // show errors and warnings
-    startMarvelmindModem (modem);
+    
+    int result = startMarvelmindModem (modem); // result creating thread
+    if (result) { //Checking creation of thread
+        fprintf(stderr, "%s", strerror (result));
+        terminateProgram = true;
+    }
 
     // Set Ctrl-C handler
     #ifdef WIN32
@@ -154,9 +129,9 @@ int main(int argc, char *argv[]){
         signal (SIGQUIT, CtrlHandler);
     #endif
 
-    sleepMs (500);
+    sleepMs (2000);
 
-    while(1){
+    while((!terminateProgram) && (!modem->terminationRequired)){
         #ifndef WIN32
             system("clear");
         #endif
@@ -198,21 +173,11 @@ int main(int argc, char *argv[]){
         }
 
         trySendCommand(modem, cmd, (uint8_t) beaconAddress);
-        // Main loop
-        while ((!terminateProgram) && (!modem->terminationRequired)){
 
-            trySendCommand(modem, cmd, beaconAddress);
-
-            if (requestRepeatsCount == 0){
-                modem->terminationRequired = true;
-            }
-
-            sleepMs (500);
-        }
+        sleepMs (500);
     }
 
     // Exit
-    stopMarvelmindModem (modem);
-    destroyMarvelmindModem (modem);
+    stopModemThread(modem);
     return 0;
 }

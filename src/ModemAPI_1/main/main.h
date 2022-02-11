@@ -9,7 +9,13 @@
 #include <signal.h>
 #endif // WIN32
 #include "../modem/modem.h"
-//#include "process.h"
+
+#define CMD_STATE 0
+#define CMD_SLEEP 1
+#define CMD_DEEPSLEEP 2
+#define CMD_WAKE 3
+
+bool terminateProgram = false;
 
 /**
  * @brief Asks the user what to do.
@@ -20,7 +26,18 @@
  *
  * @return 1, 2 or 3, depending on the action chosen. 
  */
-int menuPrincipal();
+int menuPrincipal(){
+    int valor;
+    printf("Choisisez une option pour continuer, puis appuyez ENTER:\n \
+    \t 1. Retrouver l'etat d'une balise \n \
+    \t 2. Wake balises \n \
+    \t 3. Sleep balises \n \
+    \t 4. Send command \n \
+    \t *N'importe quel numéro pour sortir...*\n \
+    Option choisie: ");
+    scanf("%d", &valor);
+    return valor;
+};
 
 /**
  * @brief Do something depending on the result of menuPrincipal()

@@ -134,8 +134,7 @@ uint32_t _GetBaudCode (uint32_t baudrate, bool verbose){
     }
 }
 
-#define SERIAL_PORT_HANDLE int
-#define PORT_NOT_OPENED -1
+
 //////////////////////////////////////////////////////////////////////////////
 // Open Serial Port (Linux only)
 // portFileName:  alias of port (e.g. "/dev/ttyACM0")
@@ -147,8 +146,7 @@ int OpenSerialPort_ (const char * portFileName, uint32_t baudrate, bool verbose)
     int ttyHandle = open(portFileName, O_RDWR );
     if (ttyHandle<0){
         if (verbose)
-            printf ("Error: unable to open serial connection to port %s "
-                  "(possibly serial port is not available)", portFileName);
+            printf ("Error: unable to open serial connection to port %s (possibly serial port is not available).\n", portFileName);
         return -1;
     }
     struct termios ttyCtrl;
@@ -457,20 +455,22 @@ Marvelmind_Thread_ (void* param){
     struct MarvelmindModem * modem=(struct MarvelmindModem*) param;
     uint8_t resultCode;
 
-    SERIAL_PORT_HANDLE ttyHandle=OpenSerialPort_(modem->ttyFileName,
-                                 9600, modem->verbose);
-    if (ttyHandle==PORT_NOT_OPENED) modem->terminationRequired=true;
-    else if (modem->verbose) printf ("Opened serial port %s\n",modem->ttyFileName);
+    modem->ttyPort = OpenSerialPort_(modem->ttyFileName, 9600, modem->verbose);
+    if (modem->ttyPort==PORT_NOT_OPENED){
+        modem->terminationRequired=true;
+    } else {
+        if (modem->verbose) printf ("Opened serial port %s\n",modem->ttyFileName);
+    }
 
     while (modem->terminationRequired==false){
         if (requestNeeded(&modem->beaconState.rq)){
             //printf("Marvelmind_Thread_:: 1\n");
-            resultCode= getBeaconState(ttyHandle,&modem->beaconState);
+            resultCode= getBeaconState(modem->ttyPort,&modem->beaconState);
             //printf("Marvelmind_Thread_:: 2: resultCode=%d\n", resultCode);
             requestFinish(&modem->beaconState.rq, resultCode, (void *) &modem->beaconState);
         }
         if (requestNeeded(&modem->beaconSleepControl.rq)){
-            resultCode= sendSleepControlCmd(ttyHandle,&modem->beaconSleepControl);
+            resultCode= sendSleepControlCmd(modem->ttyPort,&modem->beaconSleepControl);
             requestFinish(&modem->beaconSleepControl.rq, resultCode, (void *) &modem->beaconSleepControl);
         }
     }
@@ -488,7 +488,7 @@ struct MarvelmindModem * createMarvelmindModem (){
     struct MarvelmindModem * modem=malloc (sizeof (struct MarvelmindModem));
     if (modem){
         modem->ttyFileName=DEFAULT_TTY_FILENAME;
-        modem->verbose=false;
+        modem->verbose=true;
         modem->terminationRequired=false;
         #ifdef WIN32
             InitializeCriticalSection(&modem->lock_);
@@ -505,12 +505,14 @@ struct MarvelmindModem * createMarvelmindModem (){
 //////////////////////////////////////////////////////////////////////////////
 // Initialize and start work thread
 //////////////////////////////////////////////////////////////////////////////
-void startMarvelmindModem (struct MarvelmindModem * modem){
+int startMarvelmindModem (struct MarvelmindModem * modem){
+    int ret = 0;
     #ifdef WIN32
         _beginthread (Marvelmind_Thread_, 0, modem);
     #else
-        pthread_create (&modem->thread_, NULL, Marvelmind_Thread_, modem);
+        ret = pthread_create (&modem->thread_, NULL, Marvelmind_Thread_, modem);
     #endif
+    return ret;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -531,6 +533,7 @@ void stopMarvelmindModem (struct MarvelmindModem * modem){
 // first)
 //////////////////////////////////////////////////////////////////////////////
 void destroyMarvelmindModem (struct MarvelmindModem * modem){
+    if (modem->verbose) puts ("Distroying thread");
     free(modem);
 }
 
