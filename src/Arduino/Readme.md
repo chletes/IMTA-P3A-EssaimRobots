@@ -1,6 +1,6 @@
 ## How communication between Marvelmind Hedgehog and Pololu Zumo works
 
-### Marvel protocol for streaming
+### Marvelmind protocol for streaming
 ![dashboard_command_example](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/chletes/IMTA-PS5-EssaimRobots/main/assets/diagrams/dashboard_command_example.iuml)
 
 All the streaming packets have the same general structure and are transmitted every time new coordinates are measured (that's why the name 'stream'). The diagram above shows the exchange. 
