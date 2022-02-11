@@ -9,29 +9,40 @@ IMT Atlantique 3rd year project - Localization system for a swarm of mobile robo
 │	│
 │	└─── Arduino 
 │	│	│
-│	│   	└── Hedgehog_Zumo32U4_TXonly
-│	│   	└── Hedgehog_MEGA_TXonly
-│	│   	└── EssaimRobots
+│	│   └── Hedgehog_Zumo32U4_TXonly/
+│	│   └── Hedgehog_MEGA_TXonly/
+│	│   └── EssaimRobots/
 │	│
-│	└─── ModemAPI
+│	└─── ModemAPI_v1/
+│	└─── ModemAPI_v2/
+│
+└─── ressources
+│	│
+│	└─── marvelmind_interfaces_10_02_2022.pdf
+│	│
+│	└─── marvelmind_SW_2021_09_29
 │		│
-│	    	└── original
-│	    	└── ours
+│		└── ModemAPI_v1/
+│		└── ModemAPI_v2/
 │
 └─── assets
-│	│
-│	└─── img
-│	└─── diagrams
+	│
+	└─── img/
+	└─── diagrams/
+
 ```
 
-- `src` : Folder containing code
+- `src` : Folder containing our code
 	- `Arduino` : Folder containing Arduino // C++ code 
 		- `Hedgehog_MEGA_TXonly` : Unit Test - UART reception on Arduino MEGA 2560 from Marvelmind Hedgehog
 		- `Hedgehog_Zumo32U4_TXonly` : Unit Test - UART reception on Pololu Zumo 32U4 from Marvelmind Hedgehog
 		- `EssaimRobots` : Main program
 	- `ModemAPI` : Folder containing the API implementation 
-		- `original` : original code (from Marvelmind's web site)
-		- `ours` : our implementation
+		- `ModemAPI_v1` : "deprecated" API
+		- `ModemAPI_v2` : newer API that uses a library
+- `ressources` : Folder containing some ressources used in our implementation
+	- `marvelmind_interfaces_10_02_2022.pdf` : Main guide in the communication chain
+	- `marvelmind_SW_2021_09_29` : Original APIs (from MarvelMind's official site)
 - `assets` : Folder containing images and diagrams used in readmes. 
 
 ## Communication chain 
