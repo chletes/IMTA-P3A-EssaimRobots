@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
 #include "marvelmind_api.h"
 #include "marvelmind_utils.h"
 

@@ -1,4 +1,4 @@
-all: mm_api_example
+all: clean mm_api_example
 
 mm_api_example:
 	gcc -g -c main.c -o main.o

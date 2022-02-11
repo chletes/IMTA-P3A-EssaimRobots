@@ -5,6 +5,14 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <string.h>
+#ifdef WIN32
+#include <windows.h>
+#endif // WIN32
+#include "marvelmind_example.h"
+#include "marvelmind_devices.h"
+#include "marvelmind_utils.h"
+#include "marvelmind_pos.h"
 #include "marvelmind_api.h"
 
 bool marvelmindCheckVersionCommand(char *token);
@@ -28,8 +36,8 @@ bool marvelmindCheckRealtimePlayerCommand(char *token1, char *token2, char *toke
 bool marvelmindCheckGeoreferencingCommand(char *token1, char *token2, char *token3, char *token4);
 bool marvelmindCheckUpdateLocationModeCommand(char *token1, char *token2, char *token3);
 bool marvelmindCheckSendUpdateLocationCommand(char *token1);
-
 bool marvelmindCheckSetMotorsCommand(char *token1, char *token2, char *token3, char *token4, char *token5);
+bool marvelmindCheckSetRobotCommand(char *token1, char *token2, char *token3, char *token4, char *token5, char *token6);
 
 void marvelmindCycle();
 void marvelmindStart();

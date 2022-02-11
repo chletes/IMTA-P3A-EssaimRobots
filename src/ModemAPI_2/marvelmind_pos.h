@@ -5,7 +5,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <time.h>
 #include "marvelmind_api.h"
+#include "marvelmind_devices.h"
 
 #define MARVELMIND_POS_READ_RATE 20
 

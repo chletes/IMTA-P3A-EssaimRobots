@@ -1,15 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
 #include "marvelmind_utils.h"
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#include <time.h>
-#endif
 
-void printBoolEnabled(char * prefix,bool v) {
+void printBoolEnabled(char * prefix, bool v) {
     if (v) {
         printf("%s: enabled\r\n", prefix);
     } else {

@@ -5,6 +5,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <ctype.h>
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <unistd.h>
+#include <time.h>
+#endif
 #include "marvelmind_api.h"
 
 typedef enum {

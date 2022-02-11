@@ -1,9 +1,4 @@
 #include "marvelmind_api.h"
-#ifdef WIN32
-#include <windows.h>
-#else
-#include <dlfcn.h>
-#endif
 
 #ifdef WIN32
 HINSTANCE mmLibrary;

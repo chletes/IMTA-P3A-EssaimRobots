@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include "marvelmind_pos.h"
-#include "marvelmind_devices.h"
 
 #ifdef WIN32
 static clock_t prevReadTime;

@@ -5,6 +5,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#ifdef WIN32
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

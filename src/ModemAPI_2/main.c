@@ -95,6 +95,18 @@ static void checkCommand() {
         }
     }
 
+    char *token6 = NULL;
+    if (token5 != NULL) {
+        trim(token5);
+
+        token6 = strtok(NULL, " ");
+        if (token6 != NULL) {
+            trim(token6);
+        }
+    }
+
+
+
     mmGetVersionAndId(255, &version);
     mmGetVersionAndId(255, &version);
     sleep_ms(10);
@@ -164,6 +176,9 @@ static void checkCommand() {
     }
 
     if (marvelmindCheckSetMotorsCommand(token1, token2, token3, token4, token5)) {
+        return;
+    }
+    if (marvelmindCheckSetRobotCommand(token1, token2, token3, token4, token5, token6)) {
         return;
     }
 
