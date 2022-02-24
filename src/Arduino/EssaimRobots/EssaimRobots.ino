@@ -52,7 +52,9 @@ void setup(){
   setup_hedgehog(); // Marvelmind hedgehog support initialize
   setup_debug();    // Serial connection to PC.
 }
-
+void PID(){
+  // Variables hh_actual_X, hh_actual_Y disponibles.
+}
 void loop(){
   #ifdef DISTANCE_SENSOR_ENABLED
   long microseconds = TP_init();
@@ -63,7 +65,8 @@ void loop(){
   
   if (hh_position_update_flag){// new data from hedgehog available
     hh_position_update_flag = false;// clear new data flag 
-    
+    // Variables hh_actual_X, hh_actual_Y disponibles.
+    PID();
     //printPosition();
     //playBuzzer();
     //lightLEDS();
@@ -71,12 +74,12 @@ void loop(){
 
   if (hh_commande_update_flag){
     hh_commande_update_flag = false;
-    // Variables hh_ug, hh_ud disponibles.
-    Serial.print("Commande gauche: "); 
-    Serial.print((int) hh_ug); 
+    // Variables hh_target_X, hh_target_Y disponibles.
+    //Serial.print("Target X: "); 
+    //Serial.print((int) hh_target_X); 
     
-    Serial.print("\tCommande droite: "); 
-    Serial.print((int) hh_ud); 
+    //Serial.print("\tTarget Y: "); 
+    //Serial.print((int) hh_target_Y); 
     
     // appel a PID
   }
@@ -93,15 +96,15 @@ void printPosition(){ //Only for Arduino MEGA, several Serial needs to be implem
     }
     
     Serial.print("X="); 
-    dtostrf(((float) hh_x)/1000.0f, 4, coord_precision, buf);
+    dtostrf(((float) hh_actual_X)/1000.0f, 4, coord_precision, buf);
     Serial.print(buf); 
     
     Serial.print("\tY="); 
-    dtostrf(((float) hh_y)/1000.0f, 4, coord_precision, buf);
+    dtostrf(((float) hh_actual_Y)/1000.0f, 4, coord_precision, buf);
     Serial.print(buf); 
     
     Serial.print("\tZ="); 
-    dtostrf(((float) hh_z)/1000.0f, 4, coord_precision, buf);
+    dtostrf(((float) hh_actual_Z)/1000.0f, 4, coord_precision, buf);
     Serial.println(buf); 
 }
 
@@ -115,21 +118,21 @@ void printPosition(){ //Only for Arduino MEGA, several Serial needs to be implem
     coord_precision= 2; 
   }
   
-  dtostrf(((float) hh_x)/1000.0f, 4, coord_precision, buf);
+  dtostrf(((float) hh_actual_X)/1000.0f, 4, coord_precision, buf);
   if (buf != 0){
     buzzer.playFrequency(300, 200, 15);
     delay(300);
     buzzer.stopPlaying();
   }
   
-  dtostrf(((float) hh_y)/1000.0f, 4, coord_precision, buf);
+  dtostrf(((float) hh_actual_Y)/1000.0f, 4, coord_precision, buf);
   if (buf != 0){
     buzzer.playFrequency(400, 200, 15);
     delay(300);
     buzzer.stopPlaying();
   }
   
-  dtostrf(((float) hh_z)/1000.0f, 4, coord_precision, buf);
+  dtostrf(((float) hh_actual_Z)/1000.0f, 4, coord_precision, buf);
   if (buf != 0){
     buzzer.playFrequency(500, 200, 15);
     delay(300);
@@ -147,17 +150,17 @@ void printPosition(){ //Only for Arduino MEGA, several Serial needs to be implem
     coord_precision= 2; 
   }
   
-  dtostrf(((float) hh_x)/1000.0f, 4, coord_precision, buf);
+  dtostrf(((float) hh_actual_X)/1000.0f, 4, coord_precision, buf);
   if (buf != 0){
     ledYellow(1);
   }
   
-  dtostrf(((float) hh_y)/1000.0f, 4, coord_precision, buf);
+  dtostrf(((float) hh_actual_Y)/1000.0f, 4, coord_precision, buf);
   if (buf != 0){
     ledRed(1);
   }
   
-  dtostrf(((float) hh_z)/1000.0f, 4, coord_precision, buf);
+  dtostrf(((float) hh_actual_Z)/1000.0f, 4, coord_precision, buf);
   if (buf != 0){
     ledGreen(1);
   }

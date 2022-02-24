@@ -3,10 +3,10 @@
 //////////////////////////////////////////////////////////////////////////////
 ////////////////////MARVELMIND HEDGEHOG RELATED PART//////////////////////////
 
-long  hh_x, hh_y;  // coordinates of hedgehog (X,Y), mm
-long  hh_z;        // height of hedgehog, mm
+long  hh_actual_X, hh_actual_Y;  // coordinates of hedgehog (X,Y), mm
+long  hh_actual_Z;        // height of hedgehog, mm
 
-long hh_ug, hh_ud;
+long hh_target_X, hh_target_Y;
 
 bool  hh_position_update_flag; // flag of new data from hedgehog received
 bool  hh_commande_update_flag;
@@ -170,16 +170,16 @@ void HH_process_stream_position_packet(){
     { // coordinates of hedgehog (X,Y), cm ==> mm
       un16.b[0] = hh_buffer[9];
       un16.b[1] = hh_buffer[10];
-      hh_x = 10*long(un16.wi);
+      hh_actual_X = 10*long(un16.wi);
 
       un16.b[0] = hh_buffer[11];
       un16.b[1] = hh_buffer[12];
-      hh_y = 10*long(un16.wi);
+      hh_actual_Y = 10*long(un16.wi);
       
       // height of hedgehog, cm==>mm (FW V3.97+)
       un16.b[0] = hh_buffer[13];
       un16.b[1] = hh_buffer[14];
-      hh_z = 10*long(un16.wi);
+      hh_actual_Z = 10*long(un16.wi);
 
       hh_flags = hh_buffer[15];
 
@@ -205,20 +205,20 @@ void HH_process_stream_position_packet(){
       un32.b[1] = hh_buffer[10];
       un32.b[2] = hh_buffer[11];
       un32.b[3] = hh_buffer[12];
-      hh_x = un32.vi32;
+      hh_actual_X = un32.vi32;
 
       un32.b[0] = hh_buffer[13];
       un32.b[1] = hh_buffer[14];
       un32.b[2] = hh_buffer[15];
       un32.b[3] = hh_buffer[16];
-      hh_y = un32.vi32;
+      hh_actual_Y = un32.vi32;
       
       // height of hedgehog, mm 
       un32.b[0] = hh_buffer[17];
       un32.b[1] = hh_buffer[18];
       un32.b[2] = hh_buffer[19];
       un32.b[3] = hh_buffer[20];
-      hh_z = un32.vi32;
+      hh_actual_Z = un32.vi32;
 
       hh_flags = hh_buffer[21];
 
@@ -256,11 +256,11 @@ void HH_process_write_packet(){
     parameter_0.b[0] = hh_buffer[8];
     parameter_0.b[1] = hh_buffer[9];
     param_movement_0 = 10*long(parameter_0.wi);
-    hh_ug = param_movement_0/10;
+    hh_target_X = param_movement_0/10;
     parameter_1.b[0] = hh_buffer[10];
     parameter_1.b[1] = hh_buffer[11];
     param_movement_1 = 10*long(parameter_1.wi);
-    hh_ud = param_movement_1/10;
+    hh_target_Y = param_movement_1/10;
     parameter_2.b[0] = hh_buffer[12];
     parameter_2.b[1] = hh_buffer[13];
     param_movement_2 = 10*long(parameter_2.wi);
