@@ -4,7 +4,7 @@
 #include "Arduino.h"
 
 #define TOTAL_DEBUGGING false
-#define HH_REQUEST_PATH_CODE_DEBUGGING true
+#define HH_REQUEST_PATH_CODE_DEBUGGING false
 
 //////RX packet of hedgehog coordinates (stream from Hedgehog)//////
 #define HH_STREAM_POSITION_DEST_ADDRESS 0xff // 0xff = 255
@@ -33,7 +33,10 @@
 extern  long  hh_x, hh_y;  // coordinates of hedgehog (X,Y), mm
 extern  long  hh_z;        // height of hedgehog, mm
 
+extern  long  hh_ug, hh_ud;
+
 extern  bool  hh_position_update_flag; // flag of new data from hedgehog received
+extern  bool  hh_commande_update_flag;
 extern  bool  high_resolution_mode;    // by default set to false in Dashboard
 
 extern  byte  hh_buffer[HH_BUF_SIZE];

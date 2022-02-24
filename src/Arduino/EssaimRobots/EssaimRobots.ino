@@ -64,9 +64,21 @@ void loop(){
   if (hh_position_update_flag){// new data from hedgehog available
     hh_position_update_flag = false;// clear new data flag 
     
-    printPosition();
+    //printPosition();
     //playBuzzer();
     //lightLEDS();
+  }
+
+  if (hh_commande_update_flag){
+    hh_commande_update_flag = false;
+    // Variables hh_ug, hh_ud disponibles.
+    Serial.print("Commande gauche: "); 
+    Serial.print((int) hh_ug); 
+    
+    Serial.print("\tCommande droite: "); 
+    Serial.print((int) hh_ud); 
+    
+    // appel a PID
   }
 }
 

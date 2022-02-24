@@ -6,7 +6,10 @@
 long  hh_x, hh_y;  // coordinates of hedgehog (X,Y), mm
 long  hh_z;        // height of hedgehog, mm
 
+long hh_ug, hh_ud;
+
 bool  hh_position_update_flag; // flag of new data from hedgehog received
+bool  hh_commande_update_flag;
 bool  high_resolution_mode;    // by default set to false in Dashboard
 
 byte  hh_buffer[HH_BUF_SIZE];
@@ -24,6 +27,7 @@ void setup_hedgehog(){
   Serial3.begin(115200); // for Arduino MEGA
 
   hh_position_update_flag = false;
+  hh_commande_update_flag = false;
   hh_buffer_index = 0;
   hh_flags = 0;
   hh_address = 0;
@@ -252,14 +256,18 @@ void HH_process_write_packet(){
     parameter_0.b[0] = hh_buffer[8];
     parameter_0.b[1] = hh_buffer[9];
     param_movement_0 = 10*long(parameter_0.wi);
+    hh_ug = param_movement_0/10;
     parameter_1.b[0] = hh_buffer[10];
     parameter_1.b[1] = hh_buffer[11];
     param_movement_1 = 10*long(parameter_1.wi);
+    hh_ud = param_movement_1/10;
     parameter_2.b[0] = hh_buffer[12];
     parameter_2.b[1] = hh_buffer[13];
     param_movement_2 = 10*long(parameter_2.wi);
+    
+    
     //bytes from 14:16 are reserved
-
+    hh_commande_update_flag = true;
     #if TOTAL_DEBUGGING || HH_REQUEST_PATH_CODE_DEBUGGING
     Serial.print("Packet 0x201 received (");
     //Serial.print(">> Index of this elementary movement : ");
