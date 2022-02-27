@@ -4,7 +4,7 @@
  * @Author: Wentao GONG
  * @Date: 2022-02-10 21:13:45
  * @LastEditors: Wentao GONG
- * @LastEditTime: 2022-02-21 21:20:55
+ * @LastEditTime: 2022-02-27 23:06:51
  */
 /*
  * Academic License - for use in teaching, academic research, and meeting
@@ -29,6 +29,36 @@
 #define RTW_HEADER_Robot_controller_h_
 #include <math.h>                               /* decouplante_COMMON_INCLUDES_ */
 
+#define D_t  42.0                     
+                                        /* Variable: D_t
+                                        * Referenced by:
+                                        *   '<S27>/Derivative Gain'
+                                        *   '<S71>/Derivative Gain'
+                                        */
+#define I_t  0.0                      
+                                        /* Variable: I_t
+                                        * Referenced by:
+                                        *   '<S30>/Integral Gain'
+                                        *   '<S74>/Integral Gain'
+                                        */
+#define L  0.085                      
+                                        /* Variable: L
+                                        * Referenced by: '<S1>/L//2'
+                                        */
+#define N_t  20.0                     
+                                        /* Variable: N_t
+                                        * Referenced by:
+                                        *   '<S36>/Filter Coefficient'
+                                        *   '<S80>/Filter Coefficient'
+                                        */
+#define P_t  82.0                     
+                                        /* Variable: P_t
+                                        * Referenced by:
+                                        *   '<S38>/Proportional Gain'
+                                        *   '<S82>/Proportional Gain'
+                                        */
+#define Vm  5.0                         // Variable: Vm 
+
 typedef float real32_T;
 
 /* Block states (default storage) for system '<Root>/Robot_controller' */
@@ -40,11 +70,14 @@ typedef struct {
   real32_T Filter_DSTATE_c;              /* '<S72>/Filter' */
 } DW_Robot_controller_decouplan_T;
 
+
+
 extern void decouplan_Robot_controller_Init(DW_Robot_controller_decouplan_T
   *localDW);
+
 extern void decouplante_Robot_controller(real32_T rtu_x_ref, real32_T rtu_y_ref,
   real32_T rtu_x_feedback, real32_T rtu_y_feedback, real32_T rtu_theta, real32_T
-  rtu_v_center, real32_T *rty_Vd, real32_T *rty_Vg, DW_Robot_controller_decouplan_T *
+  rtu_v_center, real32_T Ts, real32_T *rty_Vd, real32_T *rty_Vg, DW_Robot_controller_decouplan_T *
   localDW);
 
 #endif                                 /* RTW_HEADER_Robot_controller_h_ */

@@ -30,12 +30,39 @@
 //#include <PololuBuzzer.h> // Comment when using Arduino MEGA
 #include "Hedgehog_communication.h"
 
+#include "Robot_controller.h"
+
 // PololuBuzzer buzzer; // Comment when using Arduino MEGA
 
 #define CM 1      //Centimeter
 #define INC 0     //Inch
 #define TP 2      //Trig_pin
 #define EP 3      //Echo_pin
+
+// Global variables 
+byte measure_flag = LOW;
+// float x_ref;                          /* '<Root>/x' == hh_target_X  */
+// float y_ref;                          /* '<Root>/y' == hh_target_Y  */
+// float x_feedback;                     /* '<Root>/x1' == hh_actual_X */
+// float y_feedback;                     /* '<Root>/y1' == hh_actual_Y */
+float theta = 0;                          /* '<Root>/theta ' */
+float v_center;                       /* '<Root>/v' */
+float Vd_t;                           /* '<Root>/capteur Vd' */
+float Vg_t;                           /* '<Root>/capteur Vg' */
+float Vd;                             /* '<Root>/Consigne Vd' */
+float Vg;                             /* '<Root>/Consigne Vg' */
+
+DW_Robot_controller_decouplan_T Robot_controller;
+
+// time related
+long prev_time_command = 0;
+long prev_time_position_update = 0
+
+void update_theta_v(float Vd_t, float Vg_t, float dt)
+{
+  v_center = (Vd_t + Vg_t)/2;
+  theta += (Vd_t - Vg_t)/L *dt
+}
 
 void setup_debug(){
   //ledYellow(0); // Comment when using Arduino MEGA
@@ -51,10 +78,10 @@ void setup(){
     
   setup_hedgehog(); // Marvelmind hedgehog support initialize
   setup_debug();    // Serial connection to PC.
+
+  void decouplan_Robot_controller_Init(&Robot_controller);//
 }
-void PID(){
-  // Variables hh_actual_X, hh_actual_Y disponibles.
-}
+
 void loop(){
   #ifdef DISTANCE_SENSOR_ENABLED
   long microseconds = TP_init();
@@ -66,10 +93,14 @@ void loop(){
   if (hh_position_update_flag){// new data from hedgehog available
     hh_position_update_flag = false;// clear new data flag 
     // Variables hh_actual_X, hh_actual_Y disponibles.
-    PID();
     //printPosition();
     //playBuzzer();
     //lightLEDS();
+    long current_time = micros();
+    float delta_t_position_update = ((float)(current_time - prev_time_position_update)) / 1.0e6; // Ideally this should be T_S
+    prev_time_position_update = current_time;
+    update_theta_v(Vd_t, Vg_t, delta_t_position_update); // update theta and v_centre
+
   }
 
   if (hh_commande_update_flag){
@@ -82,6 +113,13 @@ void loop(){
     //Serial.print((int) hh_target_Y); 
     
     // appel a PID
+    // Delta time
+    current_time = micros();
+    float delta_t_command = ((float)(current_time - prev_time_command)) / 1.0e6; // Ideally this should be T_S
+    prev_time_command = current_time;
+    //calculate commandes for robot
+    decouplante_Robot_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, v_delta_t_command, &Vd, &Vg, &Robot_controller);
+    // robots control
   }
 }
 

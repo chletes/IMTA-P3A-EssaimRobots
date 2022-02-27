@@ -19,31 +19,6 @@
 
 #include "Robot_controller.h"
 
-real32_T D_t = 42.0;                     /* Variable: D_t
-                                        * Referenced by:
-                                        *   '<S27>/Derivative Gain'
-                                        *   '<S71>/Derivative Gain'
-                                        */
-real32_T I_t = 0.0;                      /* Variable: I_t
-                                        * Referenced by:
-                                        *   '<S30>/Integral Gain'
-                                        *   '<S74>/Integral Gain'
-                                        */
-real32_T L = 0.085;                      /* Variable: L
-                                        * Referenced by: '<S1>/L//2'
-                                        */
-real32_T N_t = 20.0;                     /* Variable: N_t
-                                        * Referenced by:
-                                        *   '<S36>/Filter Coefficient'
-                                        *   '<S80>/Filter Coefficient'
-                                        */
-real32_T P_t = 82.0;                     /* Variable: P_t
-                                        * Referenced by:
-                                        *   '<S38>/Proportional Gain'
-                                        *   '<S82>/Proportional Gain'
-                                        */
-real32_T Vm = 5.0;                       /* Variable: Vm */
-
 /* System initialize for atomic system: '<Root>/Robot_controller' */
 void decouplan_Robot_controller_Init(DW_Robot_controller_decouplan_T *localDW)
 {
@@ -53,7 +28,7 @@ void decouplan_Robot_controller_Init(DW_Robot_controller_decouplan_T *localDW)
 
 /* Output and update for atomic system: '<Root>/Robot_controller' */
 void decouplante_Robot_controller(real32_T rtu_x_ref, real32_T rtu_y_ref, real32_T
-  rtu_x_feedback, real32_T rtu_y_feedback, real32_T rtu_theta, real32_T rtu_v_center,
+  rtu_x_feedback, real32_T rtu_y_feedback, real32_T rtu_theta, real32_T rtu_v_center, real32_T Ts,
   real32_T *rty_Vd, real32_T *rty_Vg, DW_Robot_controller_decouplan_T *localDW)
 {
   real32_T rtb_Product;
@@ -136,21 +111,21 @@ void decouplante_Robot_controller(real32_T rtu_x_ref, real32_T rtu_y_ref, real32
    *  Fcn: '<S1>/linearisation calcul u1'
    */
   localDW->DiscreteTimeIntegrator_DSTATE += (rtb_Product_tmp * rtb_Sum_o +
-    rtb_Product_tmp_0 * rtb_Sum_l) * 0.01;
+    rtb_Product_tmp_0 * rtb_Sum_l) * Ts;
 
   /* Update for DiscreteIntegrator: '<S33>/Integrator' incorporates:
    *  Gain: '<S30>/Integral Gain'
    */
-  localDW->Integrator_DSTATE += I_t * rtb_Sum * 0.01;
+  localDW->Integrator_DSTATE += I_t * rtb_Sum * Ts;
 
   /* Update for DiscreteIntegrator: '<S28>/Filter' */
-  localDW->Filter_DSTATE += 0.01 * rtb_FilterCoefficient;
+  localDW->Filter_DSTATE += Ts * rtb_FilterCoefficient;
 
   /* Update for DiscreteIntegrator: '<S77>/Integrator' incorporates:
    *  Gain: '<S74>/Integral Gain'
    */
-  localDW->Integrator_DSTATE_g += I_t * rtb_Sum1 * 0.01;
+  localDW->Integrator_DSTATE_g += I_t * rtb_Sum1 * Ts;
 
   /* Update for DiscreteIntegrator: '<S72>/Filter' */
-  localDW->Filter_DSTATE_c += 0.01 * rtb_FilterCoefficient_l;
+  localDW->Filter_DSTATE_c += Ts * rtb_FilterCoefficient_l;
 }
