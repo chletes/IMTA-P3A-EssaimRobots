@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "Hedgehog_communication.h"
+#include "Communication.h"
 //////////////////////////////////////////////////////////////////////////////
 ////////////////////MARVELMIND HEDGEHOG RELATED PART//////////////////////////
 
@@ -23,8 +23,8 @@ unsigned int paired_heading;
 
 //    Marvelmind hedgehog setup initialize
 void setup_hedgehog(){
-  //Serial1.begin(115200); // for Pololu Zumo 32U4
-  Serial3.begin(115200); // for Arduino MEGA
+  Serial1.begin(115200); // for Pololu Zumo 32U4
+  //Serial3.begin(115200); // for Arduino MEGA
 
   hh_position_update_flag = false;
   hh_commande_update_flag = false;
@@ -41,8 +41,8 @@ void loop_hedgehog(){
   bool good_byte = false;
   byte hh_packet_size;
   
-  //while(Serial1.available() > 0){ // for Pololu Zumo 32U4
-  while(Serial3.available() > 0){ // for Arduino MEGA
+  while(Serial1.available() > 0){ // for Pololu Zumo 32U4
+  //while(Serial3.available() > 0){ // for Arduino MEGA
     if (hh_buffer_index >= HH_BUF_SIZE){
       hh_buffer_index= 0; // restart buffer fill
       break;              // buffer overflow
@@ -50,8 +50,8 @@ void loop_hedgehog(){
     bytes_received_in_loop++;
     if (bytes_received_in_loop>100) break;// too much data without required header
       
-    //incoming_byte = Serial1.read(); // for Pololu Zumo 32U4
-    incoming_byte = Serial3.read(); // for Arduino MEGA
+    incoming_byte = Serial1.read(); // for Pololu Zumo 32U4
+    //incoming_byte = Serial3.read(); // for Arduino MEGA
     
     good_byte = false;
     switch(hh_buffer_index){
@@ -68,7 +68,7 @@ void loop_hedgehog(){
                       (incoming_byte == HH_REQUEST_PATH_TYPE) );
         hh_packet_type = incoming_byte;
         #if TOTAL_DEBUGGING
-        Serial.println("1. Checking packet type");
+        //Serial.println("1. Checking packet type");
         #endif
         break;
       }
@@ -85,7 +85,7 @@ void loop_hedgehog(){
                      (hh_packet_id == HH_RX_POSITION_HIGHRES_CODE) ||
                      (hh_packet_id == HH_REQUEST_PATH_CODE);
         #if TOTAL_DEBUGGING
-        Serial.println("2. Checking packet id");
+        //Serial.println("2. Checking packet id");
         #endif
         break;
       }
@@ -105,8 +105,8 @@ void loop_hedgehog(){
           case HH_REQUEST_PATH_CODE:
           {
             #if TOTAL_DEBUGGING
-            Serial.print("4. Checking request packet data size: ");
-            Serial.println(7+incoming_byte);
+            //Serial.print("4. Checking request packet data size: ");
+            //Serial.println(7+incoming_byte);
             #endif
             good_byte= (incoming_byte == HH_REQUEST_PATH_DATASIZE);
             break;
@@ -149,7 +149,7 @@ void loop_hedgehog(){
           break;
         case HH_REQUEST_PATH_TYPE:
           #if TOTAL_DEBUGGING
-          Serial.println("5. Request packet received");
+          //Serial.println("5. Request packet received");
           #endif
           HH_process_write_packet();
           break;
@@ -192,7 +192,7 @@ void HH_process_stream_position_packet(){
       high_resolution_mode = false;
 
       #if TOTAL_DEBUGGING
-      Serial.println("3. Sending ACK ready");
+      //Serial.println("3. Sending ACK ready");
       #endif
       if (hh_flags & 0x08) HH_send_ack_ready((byte) 0x01); // request for writing data
 
@@ -247,7 +247,7 @@ void HH_process_write_packet(){
   
   if (hh_packet_id == HH_REQUEST_PATH_CODE){ // Set Mouvement Path packet
     #if TOTAL_DEBUGGING
-    Serial.println("6. Processing write packet");
+    //Serial.println("6. Processing write packet");
     #endif
 
     type_of_mouvement = hh_buffer[5];
@@ -269,7 +269,7 @@ void HH_process_write_packet(){
     //bytes from 14:16 are reserved
     hh_commande_update_flag = true;
     #if TOTAL_DEBUGGING || HH_REQUEST_PATH_CODE_DEBUGGING
-    Serial.print("Packet 0x201 received (");
+    /*Serial.print("Packet 0x201 received (");
     //Serial.print(">> Index of this elementary movement : ");
     Serial.print(index);
     //Serial.print(">> Total number of elementary movements : ");
@@ -313,9 +313,9 @@ void HH_process_write_packet(){
       default:{
         break;
       }
-    }
+    }*/
     
-    switch(type_of_mouvement){
+    /*switch(type_of_mouvement){
       case 0:
       case 1:{
         Serial.print(">> Distance of mouvement (cm): ");
@@ -351,8 +351,9 @@ void HH_process_write_packet(){
       default:{
         break;
       }
-    }
+    }*/
     #endif
+    
     
     // send answer packet
     HH_send_write_answer_success();
@@ -379,8 +380,8 @@ void HH_send_packet(byte address, byte packet_type, unsigned int id, byte data_s
   }
   hh_set_crc16(&hh_buffer[0], frameSizeBeforeCRC);
 
-  //Serial.write(hh_buffer, frameSizeBeforeCRC + 2); // for Pololu Zumo 32U4
-  Serial3.write(hh_buffer, frameSizeBeforeCRC + 2); // for Arduino MEGA
+  Serial.write(hh_buffer, frameSizeBeforeCRC + 2); // for Pololu Zumo 32U4
+  //Serial3.write(hh_buffer, frameSizeBeforeCRC + 2); // for Arduino MEGA
 }
 
 void HH_send_ack_ready(byte status){

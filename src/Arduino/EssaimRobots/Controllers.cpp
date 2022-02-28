@@ -3,9 +3,9 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * File: Robot_controller.c
+ * File: Controllers.cpp
  *
- * Code generated for Simulink model 'decouplante'.
+ * Code generated for Simulink model 'uncoupling'.
  *
  * Model version                  : 1.12
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
@@ -16,20 +16,64 @@
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
+#include <Arduino.h>
+#include "Controllers.h"
 
-#include "Robot_controller.h"
+byte measure_flag = LOW;
+// float x_ref;                          /* '<Root>/x' == hh_target_X  */
+// float y_ref;                          /* '<Root>/y' == hh_target_Y  */
+// float x_feedback;                     /* '<Root>/x1' == hh_actual_X */
+// float y_feedback;                     /* '<Root>/y1' == hh_actual_Y */
+float theta = 0;                          /* '<Root>/theta ' */
+float v_center;                       /* '<Root>/v' */
+float Vd_t;                           /* '<Root>/capteur Vd' */
+float Vg_t;                           /* '<Root>/capteur Vg' */
+float Vd;                             /* '<Root>/Consigne Vd' */
+float Vg;                             /* '<Root>/Consigne Vg' */
+float Ti=0;
+float Tf;
 
+PIDController pidg;
+PIDController pidd;
+Zumo32U4Encoders Encoder;
+Zumo32U4Motors  motors;
+
+void setup_Velocity_PID(){
+  pidg.begin();          // initialize the PID instance
+  pidg.tune(Kp, Ki, Kd);    // Tune the PID, arguments: kP, kI, kD
+  pidg.limit(-255, 255);    // Limit the PID output between 0 and 255, this is important to get rid of integral windup!
+  pidd.begin();          
+  pidd.tune(Kp, Ki, Kd); 
+  pidd.limit(-255, 255);
+}
+void update_theta_v(float Vd_t, float Vg_t, float dt){
+  v_center = (Vd_t + Vg_t)/2;
+  theta += (Vd_t - Vg_t)/L *dt;
+}
+void velocity_PID(){
+  pidg.setpoint(Vg);    // The "goal" the PID controller tries to "reach"
+  pidd.setpoint(Vd);    // The "goal" the PID controller tries to "reach"
+  Tf=millis();
+  float Time = Ti-Tf;
+  Vg_t=Encoder.getCountsAndResetLeft()*2*Pi*R/(100*12)/Time;
+  Vd_t=Encoder.getCountsAndResetRight()*2*Pi*R/(100*12)/Time;
+  Ti=millis();
+  update_theta_v(Vd_t, Vg_t, Time);
+  int output_g = pidg.compute(Vg);    // Let the PID compute the value, returns the optimal output
+  int output_d = pidd.compute(Vd);    // Let the PID compute the value, returns the optimal output
+  motors.setLeftSpeed(output_g);
+  motors.setRightSpeed(output_g);
+}
 /* System initialize for atomic system: '<Root>/Robot_controller' */
-void decouplan_Robot_controller_Init(DW_Robot_controller_decouplan_T *localDW)
-{
+void uncoupling_controller_init(DW_uncouping_controller_T *localDW){
   /* InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' */
   localDW->DiscreteTimeIntegrator_DSTATE = 2.0;
 }
 
 /* Output and update for atomic system: '<Root>/Robot_controller' */
-void decouplante_Robot_controller(real32_T rtu_x_ref, real32_T rtu_y_ref, real32_T
+void uncoupling_controller(real32_T rtu_x_ref, real32_T rtu_y_ref, real32_T
   rtu_x_feedback, real32_T rtu_y_feedback, real32_T rtu_theta, real32_T rtu_v_center, real32_T Ts,
-  real32_T *rty_Vd, real32_T *rty_Vg, DW_Robot_controller_decouplan_T *localDW)
+  real32_T *rty_Vd, real32_T *rty_Vg, DW_uncouping_controller_T *localDW)
 {
   real32_T rtb_Product;
   real32_T rtb_Sum;
