@@ -47,8 +47,8 @@ byte measure_flag = LOW;
 // float y_feedback;                     /* '<Root>/y1' == hh_actual_Y */
 float theta = 0;                          /* '<Root>/theta ' */
 float v_center;                       /* '<Root>/v' */
-float Vd_t;                           /* '<Root>/capteur Vd' */
-float Vg_t;                           /* '<Root>/capteur Vg' */
+float Vd_t;                           /* '<Root>/encoteur Vd' */
+float Vg_t;                           /* '<Root>/encoteur Vg' */
 float Vd;                             /* '<Root>/Consigne Vd' */
 float Vg;                             /* '<Root>/Consigne Vg' */
 
