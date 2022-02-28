@@ -3,9 +3,9 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * File: Robot_controller.c
+ * File: Controllers.cpp
  *
- * Code generated for Simulink model 'decouplante'.
+ * Code generated for Simulink model 'uncoupling'.
  *
  * Model version                  : 1.12
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
@@ -16,20 +16,37 @@
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
+#include <Arduino.h>
+#include "Controllers.h"
 
-#include "Robot_controller.h"
+byte measure_flag = LOW;
+// float x_ref;                          /* '<Root>/x' == hh_target_X  */
+// float y_ref;                          /* '<Root>/y' == hh_target_Y  */
+// float x_feedback;                     /* '<Root>/x1' == hh_actual_X */
+// float y_feedback;                     /* '<Root>/y1' == hh_actual_Y */
+float theta = 0;                          /* '<Root>/theta ' */
+float v_center;                       /* '<Root>/v' */
+float Vd_t;                           /* '<Root>/capteur Vd' */
+float Vg_t;                           /* '<Root>/capteur Vg' */
+float Vd;                             /* '<Root>/Consigne Vd' */
+float Vg;                             /* '<Root>/Consigne Vg' */
+
+
+void update_theta_v(float Vd_t, float Vg_t, float dt){
+  v_center = (Vd_t + Vg_t)/2;
+  theta += (Vd_t - Vg_t)/L *dt;
+}
 
 /* System initialize for atomic system: '<Root>/Robot_controller' */
-void decouplan_Robot_controller_Init(DW_Robot_controller_decouplan_T *localDW)
-{
+void uncoupling_controller_init(DW_uncouping_controller_T *localDW){
   /* InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' */
   localDW->DiscreteTimeIntegrator_DSTATE = 2.0;
 }
 
 /* Output and update for atomic system: '<Root>/Robot_controller' */
-void decouplante_Robot_controller(real32_T rtu_x_ref, real32_T rtu_y_ref, real32_T
+void uncoupling_controller(real32_T rtu_x_ref, real32_T rtu_y_ref, real32_T
   rtu_x_feedback, real32_T rtu_y_feedback, real32_T rtu_theta, real32_T rtu_v_center, real32_T Ts,
-  real32_T *rty_Vd, real32_T *rty_Vg, DW_Robot_controller_decouplan_T *localDW)
+  real32_T *rty_Vd, real32_T *rty_Vg, DW_uncouping_controller_T *localDW)
 {
   real32_T rtb_Product;
   real32_T rtb_Sum;

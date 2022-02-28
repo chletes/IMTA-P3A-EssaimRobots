@@ -11,9 +11,9 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * File: Robot_controller.h
+ * File: Controllers.h
  *
- * Code generated for Simulink model 'decouplante'.
+ * Code generated for Simulink model 'uncoupling'.
  *
  * Model version                  : 1.12
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
@@ -25,9 +25,24 @@
  * Validation result: Not run
  */
 
-#ifndef RTW_HEADER_Robot_controller_h_
-#define RTW_HEADER_Robot_controller_h_
-#include <math.h>                               /* decouplante_COMMON_INCLUDES_ */
+#ifndef Controllers_h
+#define Controllers_h
+
+#include "Arduino.h"
+#include <math.h>                               /* uncoupling_COMMON_INCLUDES_ */
+
+extern  byte measure_flag;
+// extern  float x_ref;                          /* '<Root>/x' == hh_target_X  */
+// extern  float y_ref;                          /* '<Root>/y' == hh_target_Y  */
+// extern  float x_feedback;                     /* '<Root>/x1' == hh_actual_X */
+// extern  float y_feedback;                     /* '<Root>/y1' == hh_actual_Y */
+extern  float theta;                          /* '<Root>/theta ' */
+extern  float v_center;                       /* '<Root>/v' */
+extern  float Vd_t;                           /* '<Root>/capteur Vd' */
+extern  float Vg_t;                           /* '<Root>/capteur Vg' */
+extern  float Vd;                             /* '<Root>/Consigne Vd' */
+extern  float Vg;                             /* '<Root>/Consigne Vg' */
+
 
 #define D_t  42.0                     
                                         /* Variable: D_t
@@ -68,22 +83,16 @@ typedef struct {
   real32_T Filter_DSTATE;                /* '<S28>/Filter' */
   real32_T Integrator_DSTATE_g;          /* '<S77>/Integrator' */
   real32_T Filter_DSTATE_c;              /* '<S72>/Filter' */
-} DW_Robot_controller_decouplan_T;
+} DW_uncouping_controller_T;
 
+extern void update_theta_v(float Vd_t, float Vg_t, float dt);
 
-
-extern void decouplan_Robot_controller_Init(DW_Robot_controller_decouplan_T
+extern void uncoupling_controller_init(DW_uncouping_controller_T
   *localDW);
 
-extern void decouplante_Robot_controller(real32_T rtu_x_ref, real32_T rtu_y_ref,
+extern void uncoupling_controller(real32_T rtu_x_ref, real32_T rtu_y_ref,
   real32_T rtu_x_feedback, real32_T rtu_y_feedback, real32_T rtu_theta, real32_T
-  rtu_v_center, real32_T Ts, real32_T *rty_Vd, real32_T *rty_Vg, DW_Robot_controller_decouplan_T *
+  rtu_v_center, real32_T Ts, real32_T *rty_Vd, real32_T *rty_Vg, DW_uncouping_controller_T *
   localDW);
 
-#endif                                 /* RTW_HEADER_Robot_controller_h_ */
-
-/*
- * File trailer for generated code.
- *
- * [EOF]
- */
+#endif                                 /* RTW_HEADER_Controllers_h_ */

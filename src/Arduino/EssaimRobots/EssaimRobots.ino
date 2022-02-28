@@ -1,20 +1,17 @@
 /*  Projet 3A : Pilotage essaim robots
  *  Encadrant : Fabien Claveau
  *  Élèves    : Carlos SANTOS SEISDEDOS, Fatima-Zahra LAFTISSI, Wentao GONG
- *  Date      : 02/12/21
- *  Ce code permet de vérifier la communication entre un Pololu Zumo 32U4 et une balise mobile (hedgehog) Marvelmind
+ *  Date      : 28/02/22
  */
-// https://marvelmind.com/pics/marvelmind_beacon_interfaces.pdf
-// https://marvelmind.com/pics/marvelmind_navigation_system_manual.pdf
-/*
- * Les connections pour le robot Pololu Zumo 32U4:
- * * USB connection to computer (Serial)
+
+/* Les connections pour le robot Pololu Zumo 32U4:
+ * + USB connection to computer (Serial)
  * (Pin 14)   Zumo 32U4 TX     <=> Hedgehog RX     (Pin 11)
  * (Pin 15)   Zumo 32U4 RX     <=> Hedgehog TX     (Pin 10)
  * (Pin GND)  Zumo 32U4 Ground  <=> Hedgehog Ground (Pin 12)
  * 
- *  Les connections pour l'Arduino Mega:
- *  * USB connection to computer (Serial)
+ * Les connections pour l'Arduino Mega:
+ * + USB connection to computer (Serial)
  * (Pin 14)   Arduino TX3     <=> Hedgehog RX     (Pin 11)
  * (Pin 15)   Arduino RX3     <=> Hedgehog TX     (Pin 10)
  * (Pin GND)  Arduino Ground  <=> Hedgehog Ground (Pin 12)
@@ -22,47 +19,17 @@
  * (Pin 14 + Pin 15) = Serial3 pour l'Arduino MEGA
  */
 
- /* Nous avons programmé sur le Dashboard un baudrate de 115200 bps pour le hedgehog.
+ /* Modem location update frequency   : 2       Hz
+  * Modem location update time        : 0.5 sec
+  * UART Hedgehog sampling frequency  : 115200  Hz
   */
 
-#include <stdlib.h>
-//#include <Zumo32U4.h> // Comment when using Arduino MEGA
-//#include <PololuBuzzer.h> // Comment when using Arduino MEGA
-#include "Hedgehog_communication.h"
-
-#include "Robot_controller.h"
-
+#include "Globals.h"
+#include "Communication.h"
+#include "Controllers.h"
 // PololuBuzzer buzzer; // Comment when using Arduino MEGA
 
-#define CM 1      //Centimeter
-#define INC 0     //Inch
-#define TP 2      //Trig_pin
-#define EP 3      //Echo_pin
-
-// Global variables 
-byte measure_flag = LOW;
-// float x_ref;                          /* '<Root>/x' == hh_target_X  */
-// float y_ref;                          /* '<Root>/y' == hh_target_Y  */
-// float x_feedback;                     /* '<Root>/x1' == hh_actual_X */
-// float y_feedback;                     /* '<Root>/y1' == hh_actual_Y */
-float theta = 0;                          /* '<Root>/theta ' */
-float v_center;                       /* '<Root>/v' */
-float Vd_t;                           /* '<Root>/capteur Vd' */
-float Vg_t;                           /* '<Root>/capteur Vg' */
-float Vd;                             /* '<Root>/Consigne Vd' */
-float Vg;                             /* '<Root>/Consigne Vg' */
-
-DW_Robot_controller_decouplan_T Robot_controller;
-
-// time related
-long prev_time_command = 0;
-long prev_time_position_update = 0;
-
-void update_theta_v(float Vd_t, float Vg_t, float dt)
-{
-  v_center = (Vd_t + Vg_t)/2;
-  theta += (Vd_t - Vg_t)/L *dt;
-}
+DW_uncouping_controller_T uncoupling_controller_T;
 
 void setup_debug(){
   //ledYellow(0); // Comment when using Arduino MEGA
@@ -73,52 +40,36 @@ void setup_debug(){
 }
 
 void setup(){
-  //pinMode(TP,OUTPUT);       // set TP output for trigger  
-  //pinMode(EP,INPUT);        // set EP input for echo
-    
   setup_hedgehog(); // Marvelmind hedgehog support initialize
   setup_debug();    // Serial connection to PC.
 
-  decouplan_Robot_controller_Init(&Robot_controller);//
+  uncoupling_controller_init(&uncoupling_controller_T);
 }
 
 void loop(){
-  #ifdef DISTANCE_SENSOR_ENABLED
-  long microseconds = TP_init();
-  long distance_cm = Distance(microseconds, CM);
-  #endif
-
   loop_hedgehog();          // Marvelmind hedgehog service loop
   
-  if (hh_position_update_flag){// new data from hedgehog available
-    hh_position_update_flag = false;// clear new data flag 
+  /* Modem location update time : 0.5 sec*/
+
+  if (hh_position_update_flag){       // new data from hedgehog available
+    hh_position_update_flag = false;  // clear new data flag 
     // Variables hh_actual_X, hh_actual_Y disponibles.
+    
     //printPosition();
     //playBuzzer();
     //lightLEDS();
-    long current_time = micros();
-    float delta_t_position_update = ((float)(current_time - prev_time_position_update)) / 1.0e6; // Ideally this should be T_S
-    prev_time_position_update = current_time;
-    update_theta_v(Vd_t, Vg_t, delta_t_position_update); // update theta and v_centre
+
+    //update_theta_v(Vd_t, Vg_t, delta_t_position_update); // update theta and v_centre
 
   }
 
   if (hh_commande_update_flag){
     hh_commande_update_flag = false;
     // Variables hh_target_X, hh_target_Y disponibles.
-    //Serial.print("Target X: "); 
-    //Serial.print((int) hh_target_X); 
-    
-    //Serial.print("\tTarget Y: "); 
-    //Serial.print((int) hh_target_Y); 
-    
-    // appel a PID
-    // Delta time
-    long current_time = micros();
-    float delta_t_command = ((float)(current_time - prev_time_command)) / 1.0e6; // Ideally this should be T_S
-    prev_time_command = current_time;
+
+    // appels a PID
     //calculate commandes for robot
-    decouplante_Robot_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, delta_t_command, &Vd, &Vg, &Robot_controller);
+    uncoupling_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
     // robots control
   }
 }
@@ -207,24 +158,3 @@ void printPosition(){ //Only for Arduino MEGA, several Serial needs to be implem
   ledRed(0);
   ledGreen(0);
 }*/
-
-long Distance(long time, int flag){
-  long distance;
-  if(flag)
-    distance = time /29 / 2  ;     // Distance_CM  = ((Duration of high level)*(Sonic :340m/s))/2
-                                   //              = ((Duration of high level)*(Sonic :0.034 cm/us))/2
-                                   //              = ((Duration of high level)/(Sonic :29.4 cm/us))/2
-  else
-    distance = time / 74 / 2;      // INC
-  return distance;
-}
-
-long TP_init(){                     
-  digitalWrite(TP, LOW);                    
-  delayMicroseconds(2);
-  digitalWrite(TP, HIGH);                 // pull the Trig pin to high level for more than 10us impulse 
-  delayMicroseconds(10);
-  digitalWrite(TP, LOW);
-  long microseconds = pulseIn(EP,HIGH);   // waits for the pin to go HIGH, and returns the length of the pulse in microseconds
-  return microseconds;                    // return microseconds
-}

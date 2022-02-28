@@ -1,5 +1,5 @@
-#ifndef Hedgehog_communication_h
-#define Hedgehog_communication_h
+#ifndef Communication_h
+#define Communication_h
 
 #include "Arduino.h"
 
@@ -59,20 +59,20 @@ extern  unsigned int paired_heading;
 typedef union {byte b[2];unsigned int w;int wi;} uni_8x2_16;
 typedef union {byte b[4];float f;unsigned long v32;long vi32;} uni_8x4_32;
 
-void hh_set_crc16(byte *buf, byte size);
+extern void hh_set_crc16(byte *buf, byte size);
 
-void setup_hedgehog(); 
+extern void setup_hedgehog(); 
 
-void loop_hedgehog();
+extern void loop_hedgehog();
 
-void HH_process_stream_position_packet();
+extern void HH_process_stream_position_packet();
 
-void HH_process_write_packet();
+extern void HH_process_write_packet();
 
-void HH_send_write_answer_success();
+extern void HH_send_write_answer_success();
 
-void HH_send_packet(byte address, byte packet_type, unsigned int id, byte data_size);
+extern void HH_send_packet(byte address, byte packet_type, unsigned int id, byte data_size);
 
-void HH_send_ack_ready(byte status);
+extern void HH_send_ack_ready(byte status);
 
 #endif
