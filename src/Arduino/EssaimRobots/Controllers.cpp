@@ -30,13 +30,40 @@ float Vd_t;                           /* '<Root>/capteur Vd' */
 float Vg_t;                           /* '<Root>/capteur Vg' */
 float Vd;                             /* '<Root>/Consigne Vd' */
 float Vg;                             /* '<Root>/Consigne Vg' */
+float Ti=0;
+float Tf;
 
+PIDController pidg;
+PIDController pidd;
+Zumo32U4Encoders Encoder;
+Zumo32U4Motors  motors;
 
+void setup_Velocity_PID(){
+  pidg.begin();          // initialize the PID instance
+  pidg.tune(Kp, Ki, Kd);    // Tune the PID, arguments: kP, kI, kD
+  pidg.limit(-255, 255);    // Limit the PID output between 0 and 255, this is important to get rid of integral windup!
+  pidd.begin();          
+  pidd.tune(Kp, Ki, Kd); 
+  pidd.limit(-255, 255);
+}
 void update_theta_v(float Vd_t, float Vg_t, float dt){
   v_center = (Vd_t + Vg_t)/2;
   theta += (Vd_t - Vg_t)/L *dt;
 }
-
+void velocity_PID(){
+  pidg.setpoint(Vg);    // The "goal" the PID controller tries to "reach"
+  pidd.setpoint(Vd);    // The "goal" the PID controller tries to "reach"
+  Tf=millis();
+  float Time = Ti-Tf;
+  Vg_t=Encoder.getCountsAndResetLeft()*2*Pi*R/(100*12)/Time;
+  Vd_t=Encoder.getCountsAndResetRight()*2*Pi*R/(100*12)/Time;
+  Ti=millis();
+  update_theta_v(Vd_t, Vg_t, Time);
+  int output_g = pidg.compute(Vg);    // Let the PID compute the value, returns the optimal output
+  int output_d = pidd.compute(Vd);    // Let the PID compute the value, returns the optimal output
+  motors.setLeftSpeed(output_g);
+  motors.setRightSpeed(output_g);
+}
 /* System initialize for atomic system: '<Root>/Robot_controller' */
 void uncoupling_controller_init(DW_uncouping_controller_T *localDW){
   /* InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' */

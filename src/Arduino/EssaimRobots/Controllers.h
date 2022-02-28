@@ -27,8 +27,11 @@
 
 #ifndef Controllers_h
 #define Controllers_h
-
 #include "Arduino.h"
+#include <Zumo32U4.h> 
+#include <Zumo32U4Encoders.h>
+#include <Wire.h>
+#include <PIDController.h>
 #include <math.h>                               /* uncoupling_COMMON_INCLUDES_ */
 
 extern  byte measure_flag;
@@ -42,7 +45,19 @@ extern  float Vd_t;                           /* '<Root>/capteur Vd' */
 extern  float Vg_t;                           /* '<Root>/capteur Vg' */
 extern  float Vd;                             /* '<Root>/Consigne Vd' */
 extern  float Vg;                             /* '<Root>/Consigne Vg' */
+extern  float Ti;
+extern  float Tf;
 
+extern  PIDController  pidg;
+extern  PIDController  pidd;
+extern  Zumo32U4Encoders  Encoder;
+extern  Zumo32U4Motors  motors;
+
+#define Kp 260 //Propotional constant
+#define Ki 0 //Integral constant
+#define Kd 0 //Derivative constant
+#define R 0.2 // ray of wheel
+#define Pi 3.141592653589
 
 #define D_t  42.0                     
                                         /* Variable: D_t
@@ -85,8 +100,9 @@ typedef struct {
   real32_T Filter_DSTATE_c;              /* '<S72>/Filter' */
 } DW_uncouping_controller_T;
 
+extern void setup_Velocity_PID();
 extern void update_theta_v(float Vd_t, float Vg_t, float dt);
-
+extern void velocity_PID();
 extern void uncoupling_controller_init(DW_uncouping_controller_T
   *localDW);
 

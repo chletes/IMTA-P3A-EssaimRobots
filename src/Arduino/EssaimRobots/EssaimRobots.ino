@@ -36,13 +36,13 @@ void setup_debug(){
   //ledRed(0); // Comment when using Arduino MEGA
   //ledGreen(0); // Comment when using Arduino MEGA
 
-  Serial.begin(115200); // Comment when using Pololu Zumo 32U4
+  //Serial.begin(115200); // Comment when using Pololu Zumo 32U4
 }
 
 void setup(){
   setup_hedgehog(); // Marvelmind hedgehog support initialize
   setup_debug();    // Serial connection to PC.
-
+  setup_Velocity_PID();
   uncoupling_controller_init(&uncoupling_controller_T);
 }
 
@@ -70,11 +70,12 @@ void loop(){
     // appels a PID
     //calculate commandes for robot
     uncoupling_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
+    velocity_PID();
     // robots control
   }
 }
 
-void printPosition(){ //Only for Arduino MEGA, several Serial needs to be implemented
+/*void printPosition(){ //Only for Arduino MEGA, several Serial needs to be implemented
     byte coord_precision;
     char buf[12];
 
@@ -95,7 +96,7 @@ void printPosition(){ //Only for Arduino MEGA, several Serial needs to be implem
     Serial.print("\tZ="); 
     dtostrf(((float) hh_actual_Z)/1000.0f, 4, coord_precision, buf);
     Serial.println(buf); 
-}
+}*/
 
 /*void playBuzzer(){ // Comment when using Arduino MEGA
   byte coord_precision;
