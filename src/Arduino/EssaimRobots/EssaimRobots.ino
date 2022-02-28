@@ -56,12 +56,12 @@ DW_Robot_controller_decouplan_T Robot_controller;
 
 // time related
 long prev_time_command = 0;
-long prev_time_position_update = 0
+long prev_time_position_update = 0;
 
 void update_theta_v(float Vd_t, float Vg_t, float dt)
 {
   v_center = (Vd_t + Vg_t)/2;
-  theta += (Vd_t - Vg_t)/L *dt
+  theta += (Vd_t - Vg_t)/L *dt;
 }
 
 void setup_debug(){
@@ -79,7 +79,7 @@ void setup(){
   setup_hedgehog(); // Marvelmind hedgehog support initialize
   setup_debug();    // Serial connection to PC.
 
-  void decouplan_Robot_controller_Init(&Robot_controller);//
+  decouplan_Robot_controller_Init(&Robot_controller);//
 }
 
 void loop(){
@@ -114,11 +114,11 @@ void loop(){
     
     // appel a PID
     // Delta time
-    current_time = micros();
+    long current_time = micros();
     float delta_t_command = ((float)(current_time - prev_time_command)) / 1.0e6; // Ideally this should be T_S
     prev_time_command = current_time;
     //calculate commandes for robot
-    decouplante_Robot_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, v_delta_t_command, &Vd, &Vg, &Robot_controller);
+    decouplante_Robot_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, delta_t_command, &Vd, &Vg, &Robot_controller);
     // robots control
   }
 }
