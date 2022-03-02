@@ -1,0 +1,51 @@
+\section{Localisation}
+
+La position du robot peut être représenté par l'équation (\ref{eq:position}). À chaque instant, la position peut être estimée à partir d'une position connue en intégrant le mouvement (en additionnant les distances de déplacement incrémentielles).
+
+Pour un système discret avec un intervalle d'échantillonnage fixe $\Delta t$, les distances de déplacement incrémentielles $\left ( \Delta x, \Delta y, \Delta \theta \right )$, c'est-à-dire le chemin parcouru dans le dernier intervalle d'échantillonnage, sont: 
+\begin{equation}
+    \Delta x = \Delta s \cdot \cos \left ( \theta + \nicefrac{\Delta \theta}{2} \right )
+\end{equation}
+
+\begin{equation}
+    \Delta y = \Delta s \cdot \sin \left ( \theta + \nicefrac{\Delta \theta}{2} \right )
+\end{equation}
+
+\begin{equation}
+    \Delta \theta = \frac{\Delta s_r - \Delta s_l}{b}
+\end{equation}
+
+\begin{equation}
+    \Delta s = \frac{\Delta s_r + \Delta s_l}{2}
+\end{equation}
+
+où: 
+\begin{itemize}
+    \item $\Delta s_r$ et $\Delta s_l$ sont les distances parcourues par la roue droite et la roue gauche, respectivement,
+    \item $b$ est distance entre les deux roues du robot.
+\end{itemize}
+
+
+De ce fait, la position mise à jour peut être calculé grâce à:
+
+\begin{equation}
+    p' = p + \left [
+\begin{array}{l}
+     \Delta x  \\
+     \Delta y  \\
+     \Delta \theta
+\end{array}
+    \right ] = \left [
+\begin{array}{l}
+     x  \\
+     y  \\
+     \theta
+\end{array}
+    \right ] + \left [
+\begin{array}{c}
+     \frac{\Delta s_r + \Delta s_l}{2} \cdot \cos \left ( \theta + \frac{\Delta s_r - \Delta s_l}{2\cdot b} \right )  \\
+     \frac{\Delta s_r + \Delta s_l}{2} \cdot \sin \left ( \theta + \frac{\Delta s_r - \Delta s_l}{2\cdot b} \right )  \\
+     \frac{\Delta s_r - \Delta s_l}{b}
+\end{array}
+    \right ]
+\end{equation}

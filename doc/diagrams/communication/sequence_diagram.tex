@@ -1,0 +1,14 @@
+\begin{sequencediagram}
+    \newthread {modem}{Modem}
+    \newinst [1]{pololu}{Pololu}
+    
+    \begin{sdblock}{ Stream packet }{ Position }
+        \begin {call}{modem}{ 0x47 }{pololu}{} \end {call}
+    \end{sdblock}
+    
+    \begin{sdblock}{ Read/Write packet }{ Data }
+    \begin {call}{pololu}{ 0x48 }{modem}{0x4a} \end {call}
+    \postlevel
+    \begin {call}{pololu}{ 0x48 }{modem}{0x4a} \end {call}
+    \end{sdblock}
+\end{sequencediagram}

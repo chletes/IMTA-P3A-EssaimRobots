@@ -1,0 +1,68 @@
+\documentclass{article} % for short documents
+%\documentclass{report} % for longer documents
+\usepackage[utf8]{inputenc}
+
+%% Defining the language for the document
+\usepackage[french]{babel}
+\usepackage[french]{isodate}
+
+\usepackage{core/imta_core}
+\usepackage{core/imta_extra}
+\usepackage{amsmath}
+\usepackage{schemabloc}
+\usepackage{textcomp}
+\usepackage{nicefrac}
+\usetikzlibrary{shapes,arrows}
+\usepackage[underline=true,rounded corners=false]{pgf-umlsd}
+
+\cleanlookdateon % formats date according to the loaded language from now on
+
+\author{\\Fatima-Zahra LAFTISSI, \\ Wentao GONG, \\ Carlos SANTOS SEISDEDOS}
+%\imtaAuthorShort{<author's initials>}
+%\imtaSuperviser{<superviser>}
+%\date{\noexpand\today} % automatically print today's date, can be redefined using \date{<date>}
+\date{16 Décembre 2021}
+\title{Système de localisation pour un essaim de robots mobiles}
+\subtitle{Projet 3\textsuperscript{ème} année - Année 2021 - 2022 \\
+\large{Encadrant: Fabien CLAVEAU}}
+\imtaVersion{1.1}
+
+\linespread{1.15}
+
+\imtaSetIMTStyle % Sets font and headers/footers according to the IMT Atlantue style guidelines
+
+\begin{document}
+
+% front cover
+\imtaMaketitlepage
+
+
+\tableofcontents
+% <content>
+\input{1_intro}
+\include{2_formulation_commande}
+\include{3_kinematic_model}
+\include{4_Localization}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% 3 Février 2022 %%%%%%%%%%
+%1. Introduction
+%2. Chaîne de communication
+%2.1. Implémentation de la chaîne
+%2.2. Vérifications - Tests
+%3. Formulation de la loi de commande
+%3.1. Équations - modèle cinématique (?)
+%4. Solution de la loi de commande
+%4.1. Matlab
+%4.2. Bascule sur C++
+%4.3. Vérifications - Tests
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibliography{bibliography}{}
+\bibliographystyle{ieeetr}
+
+% back cover
+\imtaMakeCover
+
+\end{document}
+
