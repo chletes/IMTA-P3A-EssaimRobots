@@ -1,87 +1,19 @@
 \section{Formulation de la loi de commande}
 
-Nous allons diviser le problème en deux systèmes, qui eux-mêmes regroupent des sous-systèmes. Comme indiqué dans la Figure \ref{fig:formulation_commande}, une partie est situé dans un ordinateur pour le contrôle de la trajectoire de notre essaim de robot, et l’autre est mobile et se compose d'un robot et d'une balise mobile (nommée \textit{hedgehog}). Vu qu'il s'agit d'un système de robots évoluant en essaims, il est clair qu'il peut avoir plusieurs parties mobiles.
+\begin{flushright}
+24 Février 2022
+\end{flushright}
 
 \begin{figure}[h!]
     \centering
-    \input{diagrams/formulation_commande}
-    \caption{Schéma bloc du système}
+    \input{diagrams/2_form_loi_comm/formulation_commande}
+    \caption{Schéma bloc du système. En bleu les robots Pololu (Arduino), et en noir le Système Centrale (PC).}
     \label{fig:formulation_commande}
 \end{figure}
 
-
-\subsection{\textsc{L'ordinateur}}
-L'ordinateur étant le premier système, il se compose d'un système centrale et du logiciel Marvelmind appelé \textit{Dashboard}. Pour la communication avec les balises mobiles, un modem (pourvu avec les balises Marvelmind) doit être branché à l'ordinateur. 
-
-\subsubsection{Le système centrale}
-
-% Le système centrale qui nous permettra de contrôler tout l'essaim de robots depuis un point unique et qui sera programmé sur un ordinateur. Ce dernier communiquera avec le Dashboard de notre système GPS ,recevant à chaque instant la position de chaque robot à travers le Hedgehog placés dessus et les balises immobiles.\\
-
-% Notre dernier système serait le robot pololu et le Hedgehog embarqué dessus. À travers le Hedgehog, le robot communiquera avec le Dashboard et le système centrale pour suivre correctement le trajet assigné pour lui.\\
-
-Le système centrale a pour objectif l'organisation du mouvement de chaque robot qui fait partie de l'essaim de robots\footnote{Dans un premier temps, nous travaillons que sur deux robots.}, afin que le barycentre des robots suive une trajectoire donnée. Celui-ci sera programmé sur l'ordinateur et communiquera avec le logiciel \textit{Dashboard} avec deux objectifs: 
-\begin{itemize}
-    \item Recevoir à chaque instant la position des balises mobiles embarquées sur chaque robot, et 
-    \item Transmettre les commandes aux robots (à travers les balises mobiles). 
-\end{itemize}
-
-% Entrée principale du système centrale
-Le système reçoit du coté utilisateur une trajectoire prédéfinie composée d'une série de positions $(x_T,x_T)$, dont le barycentre de l'essaim de robots devrait suivre, et une inter-distance $(d)$ dont les robots doivent maintenir impérativement tout au long de la trajectoire. Ces données là sont appelés la \textbf{consigne} $u$. 
-
-% Entrée secondaire du système centrale.
-\noindent Le système reçoit de même du côté des robots, des données de retour $r$ pour accomplir la consigne, mais elles sont présentées dans la suite. 
-
-% Objectif du système centrale
-À partir de cette consigne $u$ (et des données de retour $r$, bien évidemment), le système centrale produit la position que chaque robot doit suivre (afin de maintenir l'inter-distance $(d)$), et en sortie il fournit la vitesse des roues (gauche et droite: $(v_{c,g}, v_{c,d})$) de chaque robot. Ces données sont appelés la \textbf{commande} $c$.
-
-Pour transmettre la commande $c$ à chaque robot, le système centrale communique constamment avec le \textit{Dashboard} en envoyant cette commande $c$ (ainsi qu'un sorte d'identifiant unique pour indiquer le robot) et en recevant la position $(x, y)$ de la part du \textit{Dashboard} ainsi que les vitesses des roues $(v_g, v_d)$ et la direction actuelle $(\delta \theta)$\footnote{Cette direction est calculée grâce aux vitesses des roues $(v_g, v_d)$ du robot, et peut donc être calculé par le système centrale lui-même, au lieu de le transmettre à travers toute la chaîne de communication.} de la part du robot lui-même. Ces données sont appelés le \textbf{retour} $r$. 
-
-\subsubsection{Le \textit{Dashboard}}
-Comme avancé antérieurement, le système « GPS d’intérieur » Marvelmind est composé de trois parties: 
-\begin{itemize}
-    \item le logiciel, nommé \textit{Dashboard}, 
-    \item le modem, branché à l'ordinateur,
-    \item des balises fixes (4 pour être plus précis), qui permettent de créer le repère, et
-    \item des balises mobiles (ou \textit{hedgehogs}), qui sont embarquées sur les robots pour connaître leur position.
-\end{itemize}
-
-On s'intéresse au \textit{Dashboard} maintenant. 
-
-Il communique avec le système centrale comme expliqué précédemment, et avec le \textit{Hedgehog} pour lui envoyer les commandes $c$ destinées aux robots. Il reçoit de-même à chaque instant la position des \textit{Hedgehogs} (en soi, des robots), qui peut être récupérée par le système centrale afin de faire ses calculs.
-
-\subsection{Le système \textsc{Pololu + Hedgehog}}
-
-\subsubsection{Les balises mobiles (ou Hedgehogs)}
-Du coté du Hedgehog, son rôle est de communiquer sa position (en soi, la position du robot dans lequel il est embarqué) à chaque instant au Dashboard, mais il est aussi le relais de communication avec l'ordinateur en transmettant la commande $c$ envoyé par le système centrale et renvoyant en retour les vitesses des roues $(v_g, v_d)$ et la direction du robot à chaque instant $(\delta \theta)$. Cette communication est assuré par l'ensemble du produit Marvelmind. 
-
-\subsubsection{Les robots}
-Le dernier système est le robot Pololu, dont l'ensemble d'eux constituent l'essaim de robots. Il communique avec son Hedgehog à travers le protocole de communication USART \textit{(Universal Synchronous \& Asynchronous Receiver Transmitter)} \cite{UART-wikipedia-url}.
-
-\noindent Il reçoit en entrée la position $(x,y)$ à chaque instant du Hedgehog (en soi, sa position) ainsi que la commande des vitesses des roues $(v_{c,g}, v_{c,d})$ qui doit suivre, et renvoie en sortie les vitesses actuelles de ses roues $(v_g, v_d)$ et le changement de direction $(\delta\theta)$.
-
-\noindent Afin de bien suivre les commandes, le robot comportera un régulateur qui cherche que $\left \{ \begin{array}{ll}
-     v_{c,g} - v_g \rightarrow 0  \\
-     v_{c,d} - v_d \rightarrow 0
-\end{array} \right .$
-
-\subsection{Les perturbations}
-Le robot peut ressentir des perturbations qui lui rendent plus difficile la tâche de suivre ses commandes. Par exemple, le robot peut glisser ou subir des couples résistants. Pour le premier exemple, le régulateur du système centrale peut s'en occuper de cela \textit{a priori}, et pour le deuxième le régulateur introduit dans le paragraphe antérieur peut suffire (à nouveau, \textit{a priori}). Il y'aura aussi des perturbations de signaux à prendre en considération du coté système centrale.
-
-\subsection{Les tâches à faire}
-
-À partir de cette définition du problème de commande, pour continuer avec le pilotage de l'essaim de robots, nous avons identifiés les suivantes tâches: 
-
-\begin{itemize}
-    \item Donner une solution au problème de commande
-    \begin{itemize}
-        \item Identifier les équations
-        \item Choisir les régulateurs pour chaque système et optimiser la loi de commande.
-        \item Valider le problème de commande avec Matlab
-    \end{itemize}
-    \item Codage du Système Centrale (SC)
-    \begin{itemize}
-        \item Choisir le langage de programmation
-        \item Programmation
-        \item Assurer la communication SC $\leftrightarrow$ \textit{Dashboard} $\leftrightarrow$ \textit{Pololu}
-    \end{itemize}
-\end{itemize}
+\begin{figure}[h!]
+    \centering
+    \input{diagrams/2_form_loi_comm/robot}
+    \caption{Schéma bloc du système. En bleu les robots Pololu (Arduino), et en noir le Système Centrale (PC).}
+    \label{fig:formulation_commande}
+\end{figure}

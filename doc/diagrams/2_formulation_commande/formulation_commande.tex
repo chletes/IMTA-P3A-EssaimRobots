@@ -1,0 +1,37 @@
+\tikzset{%
+  block/.style    = {draw, thick, rectangle, minimum height = 2em, minimum width = 1em},
+  sum/.style      = {draw, circle, node distance = 2cm}, % Adder
+  input/.style    = {coordinate}, % Input
+  output/.style   = {coordinate} % Output
+}
+% Defining string as labels of certain blocks.
+%\newcommand{\suma}{\Large$+$}
+%\newcommand{\inte}{$\displaystyle \int$}
+%\newcommand{\derv}{\huge$\frac{d}{dt}$}
+
+\begin{tikzpicture}[auto, thick, node distance=4cm, >=triangle 45]
+  \draw
+    node at (0,0)[right=-3mm]{}
+    node [input, name=input1] {}
+    node at (3,0)[block, minimum height = 12em, minimum width = 1em] (RegulateurLQ) {\begin{tabular}{c}Régulateur \\ LQ \end{tabular}}
+    node at (7.45,+1.55)[block, color = blue] (RobotG) {Robot G}
+    node at (7.45,-1.55)[block, color = blue] (RobotD) {Robot D}
+    node at (11.0,0)[block, minimum height = 12em] (Mux) {}
+    node at (1.25,-1)[](ret2){}
+    node at (11.70,-3)[](ret3){}
+    node at (7.25,-3)[block](API){API + Conversion};
+	
+  \draw[->](input1) -- node {\begin{tabular}{c}Consigne \\ $u = \begin{bmatrix} x^c_G \\ y^c_G \\ d^c_x \\ d^c_y \\ \end{bmatrix}$ \end{tabular}}(RegulateurLQ);
+  
+  \draw[->, color = blue](RegulateurLQ.52) -- node [color = blue]{\begin{tabular}{c} Commande \\ $c_1 = \begin{bmatrix} x^c_1 \\ y^c_1 \\ \end{bmatrix}$ \end{tabular}} (RobotG);
+  
+  \draw[->, color = blue](RegulateurLQ.308) -- node[color = blue]{\begin{tabular}{c} Commande \\ $c_2 = \begin{bmatrix} x^c_2 \\ y^c_2 \\ \end{bmatrix}$ \end{tabular}} (RobotD);
+  
+  \draw[->, color = blue](RobotG.east) to node [above, color = blue]{$ r_1 = \begin{bmatrix} x_1 \\ y_1 \\ \end{bmatrix}$} (Mux.97);
+  
+  \draw[->, color = blue](RobotD.east) to node [above, color = blue]{$ r_2 = \begin{bmatrix} x_2 \\ y_2 \\ \end{bmatrix}$} (Mux.263);
+  
+  \draw[->](Mux.east) -- ++(0.5,0) -- node[right]{$r = \begin{bmatrix} x_1 \\ y_1 \\ x_2 \\ y_2 \end{bmatrix}$}(ret3.center) -- (API.east);
+  
+  \draw[->](API.west) -- ++(-4.5,0) -- node[left]{$r = \begin{bmatrix} x_G \\ y_G \\ \Delta_x \\ \Delta_y \end{bmatrix}$}(ret2.center) --(RegulateurLQ.220);
+\end{tikzpicture}
