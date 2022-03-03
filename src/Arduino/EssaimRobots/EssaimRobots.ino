@@ -30,6 +30,7 @@
 // PololuBuzzer buzzer; // Comment when using Arduino MEGA
 
 DW_uncouping_controller_T uncoupling_controller_T;
+B_Robot_controller_decouplant_T Robot_controller;
 
 void setup_debug(){
   //ledYellow(0); // Comment when using Arduino MEGA
@@ -69,7 +70,7 @@ void loop(){
 
     // appels a PID
     //calculate commandes for robot
-    uncoupling_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
+    uncoupling_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta,  &Vd, &Vg, &Robot_controller,&uncoupling_controller_T, 0.5);
     velocity_PID();
     // robots control
   }

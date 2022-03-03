@@ -4,7 +4,7 @@
  * @Author: Wentao GONG
  * @Date: 2022-02-10 21:13:45
  * @LastEditors: Wentao GONG
- * @LastEditTime: 2022-02-27 23:06:51
+ * @LastEditTime: 2022-03-03 22:00:15
  */
 /*
  * Academic License - for use in teaching, academic research, and meeting
@@ -39,8 +39,7 @@ extern  byte measure_flag;
 // extern  float y_ref;                          /* '<Root>/y' == hh_target_Y  */
 // extern  float x_feedback;                     /* '<Root>/x1' == hh_actual_X */
 // extern  float y_feedback;                     /* '<Root>/y1' == hh_actual_Y */
-extern  float theta;                          /* '<Root>/theta ' */
-extern  float v_center;                       /* '<Root>/v' */
+extern  float theta;                          /* '<Root>/theta ' */                       /* '<Root>/v' */
 extern  float Vd_t;                           /* '<Root>/capteur Vd' */
 extern  float Vg_t;                           /* '<Root>/capteur Vg' */
 extern  float Vd;                             /* '<Root>/Consigne Vd' */
@@ -71,8 +70,8 @@ extern  Zumo32U4Motors  motors;
                                         *   '<S30>/Integral Gain'
                                         *   '<S74>/Integral Gain'
                                         */
-#define L  0.085                      
-                                        /* Variable: L
+#define L  8.5                      
+                                        /* Variable: L cm
                                         * Referenced by: '<S1>/L//2'
                                         */
 #define N_t  20.0                     
@@ -87,17 +86,22 @@ extern  Zumo32U4Motors  motors;
                                         *   '<S38>/Proportional Gain'
                                         *   '<S82>/Proportional Gain'
                                         */
-#define Vm  5.0                         // Variable: Vm 
+#define Vm  40                       // Variable: Vm cm/s
 
-typedef float real32_T;
+typedef float real_T;
+
+/* Block signals for system '<Root>/Robot_controller' */
+typedef struct {
+  real_T addantiwindup;                /* '<S1>/Saturation1' */
+} B_Robot_controller_decouplant_T;
 
 /* Block states (default storage) for system '<Root>/Robot_controller' */
 typedef struct {
-  real32_T DiscreteTimeIntegrator_DSTATE;/* '<S1>/Discrete-Time Integrator' */
-  real32_T Integrator_DSTATE;            /* '<S33>/Integrator' */
-  real32_T Filter_DSTATE;                /* '<S28>/Filter' */
-  real32_T Integrator_DSTATE_g;          /* '<S77>/Integrator' */
-  real32_T Filter_DSTATE_c;              /* '<S72>/Filter' */
+  real_T DiscreteTimeIntegrator_DSTATE;/* '<S1>/Discrete-Time Integrator' */
+  real_T Integrator_DSTATE;            /* '<S33>/Integrator' */
+  real_T Filter_DSTATE;                /* '<S28>/Filter' */
+  real_T Integrator_DSTATE_g;          /* '<S77>/Integrator' */
+  real_T Filter_DSTATE_c;              /* '<S72>/Filter' */
 } DW_uncouping_controller_T;
 
 extern void setup_Velocity_PID();
@@ -105,10 +109,9 @@ extern void update_theta_v(float Vd_t, float Vg_t, float dt);
 extern void velocity_PID();
 extern void uncoupling_controller_init(DW_uncouping_controller_T
   *localDW);
-
-extern void uncoupling_controller(real32_T rtu_x_ref, real32_T rtu_y_ref,
-  real32_T rtu_x_feedback, real32_T rtu_y_feedback, real32_T rtu_theta, real32_T
-  rtu_v_center, real32_T Ts, real32_T *rty_Vd, real32_T *rty_Vg, DW_uncouping_controller_T *
-  localDW);
+extern void uncoupling_controller(real_T rtu_x_ref, real_T rtu_y_ref,
+  real_T rtu_x_feedback, real_T rtu_y_feedback, real_T rtu_theta, real_T *rty_Vd,
+  real_T *rty_Vg, B_Robot_controller_decouplant_T *localB,
+  DW_uncouping_controller_T *localDW, float Ts);
 
 #endif                                 /* RTW_HEADER_Controllers_h_ */
