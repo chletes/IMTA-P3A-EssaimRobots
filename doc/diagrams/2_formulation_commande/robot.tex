@@ -18,12 +18,12 @@
 	node at (4.5,-1)[block](pid1){PID}
 	node at (4.5,-3)[block](pid2){PID}
 	node at (7,-2)[block, minimum height = 10em](NL){NL}
-	node at (10,-2)[block, minimum height = 10em](Robot){Robot}
-	node at (11.1,+0.8) [](ret1){}
-	node at (11.6,+1.2) [](ret2){}
-	node at (11.1,-4.5) [](ret3){}
-	node at (11.6,-5) [](ret4){}
-	node at (8.7,+1) [block](Est){Estimateur de $\theta$};
+	node at (9.6,-2)[block, minimum height = 10em](Robot){Robot}
+	node at (10.7,+0.6) [](ret1){}
+	node at (11.2,+1.0) [](ret2){}
+	node at (10.7,-4.1) [](ret3){}
+	node at (11.2,-4.5) [](ret4){}
+	node at (8.7,+0.8) [block](Est){Estimateur de $\theta$};
 	
 	\draw[->](input1) -- node [above, near end]{$+$}(suma1);
 	\draw[->](input2) -- node [above, near end]{$+$}(suma2);
@@ -44,8 +44,8 @@
 	\draw[->](Robot.70) -- ++(0.5,0) -- (ret3.center) -| node[very near end]{$-$}(suma1.south);
 	\draw[->](Robot.-70) -- ++(1,0) -- (ret4.center) -| node[very near end]{$-$}(suma2.south);
 	
-	\draw node at (11.1,-0.38) {\Large \textbullet};
-	\draw node at (11.6,-3.68) {\Large \textbullet};
+	\draw node at (10.7,-0.38) {\Large \textbullet};
+	\draw node at (11.2,-3.68) {\Large \textbullet};
 	
     %\draw[->](input1) -- node {\begin{tabular}{c}Consigne \\ $u = \begin{bmatrix} x^c_G \\ y^c_G \\ d^c_x \\ d^c_y \\ \end{bmatrix}$ \end{tabular}}(RegulateurLQ);
     

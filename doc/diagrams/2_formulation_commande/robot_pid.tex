@@ -1,0 +1,80 @@
+\tikzset{%
+  block/.style    = {draw, thick, rectangle, minimum height = 2em, minimum width = 1em},
+  sum/.style      = {draw, circle, node distance = 1cm}, % Adder
+  input/.style    = {coordinate}, % Input
+  output/.style   = {coordinate}, % Output
+  BLOCK/.style={draw, align=center, text height=0.4cm, rectangle split, rectangle split horizontal, rectangle split parts=#1, minimum height = 2.5cm}
+}
+% Defining string as labels of certain blocks.
+\newcommand{\suma}{$\sum$}
+%\newcommand{\inte}{$\displaystyle \int$}
+%\newcommand{\derv}{\huge$\frac{d}{dt}$}
+
+\begin{tikzpicture}[auto, thick, node distance=4cm, >=triangle 45]
+    \draw
+    node at (0,-1.2)[](input1) {$V^c_g$}
+	node at (0,-2.8)[](input2) {$V^c_d$}
+	node at (2.3,-1.2)[sum](suma1){\suma}
+	node at (1.5,-2.8)[sum](suma2){\suma}
+	node at (4.2,-1.2)[isosceles triangle, draw, minimum size=1cm](pid1){P}
+	node at (4.2,-2.8)[isosceles triangle, draw, minimum size=1cm](pid2){P}
+	node at (10.2,-2) [BLOCK=4](meca){\nodepart{one}PWM\strut\nodepart{two}\begin{tabular}{c}Moteur  \\ + Encodeur\end{tabular}\strut\nodepart{three}Mécanique\strut\nodepart{four}Hedgehog\strut};
+	%node at (7,-2)[block, minimum height = 10em](NL){PWM}
+	%node at (10,-2)[block, minimum height = 10em](Robot){Robot}
+	%node at (11.1,+0.8) [](ret1){}
+	%node at (11.6,+1.2) [](ret2){}
+	%node at (11.1,-4.5) [](ret3){}
+	%node at (11.6,-5) [](ret4){}
+	%node at (8.7,+1) [block](Est){Estimateur de $\theta$};
+	
+	\draw[->](input1) -- node [above, near end]{$+$}(suma1);
+	\draw[->](input2) -- node [above, near end]{$+$}(suma2);
+	
+	\draw[->](suma1) -- node[above]{$\Delta v_g$}(pid1);
+	\draw[->](suma2) -- node[above, near end]{$\Delta v_d$}(pid2);
+	
+	\draw[->](pid1) -- node [above]{$DC_g$}(meca.168);
+	\draw[->](pid2) -- node [above]{$DC_d$}(meca.192);
+	
+	\draw[->](meca.210) |- ++(0, -0.2) -| node [very near end]{$-$}(suma1.south);
+	\draw[->](meca.245) |- ++(0, -0.5) -| node [very near end]{$-$}(suma2.south);
+	
+	\draw[->](meca.10) -- node[above]{$x_1$}++(1, 0);
+	\draw[->](meca.-10) -- node[above]{$y_1$}++(1, 0);
+	
+	%\draw[->](pid1) -- node[above]{$\dot{x_i}$}(NL.110);
+	%\draw[->](pid2) -- node[above]{$\dot{y_i}$}(NL.250);
+	
+	%\draw[->](NL.70) -- node[above]{$V^c_g$}(Robot.121);
+	%\draw[->](NL.290) -- node[above]{$V^c_d$}(Robot.239);
+	
+	%\draw[->](Robot.70) -- ++(0.5,0) -- node[left]{$x_i$}(ret1.center) -- (Est.-8);
+	%\draw[->](Robot.-70) -- ++(1,0) -- node[right]{$y_i$}(ret2.center) -- (Est.+8);
+	%\draw[->](Est.180) -| node[left]{$\hat{\theta}$}(NL);
+	
+	%\draw[->](Robot.70) -- ++(0.5,0) -- (ret3.center) -| node[very near end]{$-$}(suma1.south);
+	%\draw[->](Robot.-70) -- ++(1,0) -- (ret4.center) -| node[very near end]{$-$}(suma2.south);
+	
+	%\draw node at (11.1,-0.38) {\Large \textbullet};
+	%\draw node at (11.6,-3.68) {\Large \textbullet};
+	
+    %\draw[->](input1) -- node {\begin{tabular}{c}Consigne \\ $u = \begin{bmatrix} x^c_G \\ y^c_G \\ d^c_x \\ d^c_y \\ \end{bmatrix}$ \end{tabular}}(RegulateurLQ);
+    
+    %\draw[->, color = blue](RegulateurLQ.52) -- node [color = blue]{\begin{tabular}{c} Commande \\ $c_1 = \begin{bmatrix} x^c_1 \\ y^c_1 \\ \end{bmatrix}$ \end{tabular}} (RobotG);
+    
+    %\draw[->, color = blue](RegulateurLQ.308) -- node[color = blue]{\begin{tabular}{c} Commande \\ $c_2 = \begin{bmatrix} x^c_2 \\ y^c_2 \\ \end{bmatrix}$ \end{tabular}} (RobotD);
+    
+    %\draw[->, color = blue](RobotG.east) to node [above, color = blue]{$ r_1 = \begin{bmatrix} x_1 \\ y_1 \\ \end{bmatrix}$} (Mux.97);
+    
+    %\draw[->, color = blue](RobotD.east) to node [above, color = blue]{$ r_2 = \begin{bmatrix} x_2 \\ y_2 \\ \end{bmatrix}$} (Mux.263);
+    
+    %\draw[->](Mux.east) -- ++(1,0) -- ++(0,-4) -- node {$r = \begin{bmatrix} x_1 \\ y_1 \\ x_2 \\ y_2 \end{bmatrix}$}(API.east);
+    
+    %\draw[->](Mux.east) -- ++(0.5,0) -- node[right]{$r = \begin{bmatrix} x_1 \\ y_1 \\ x_2 \\ y_2 \end{bmatrix}$}(ret3.center) -- (API.east);
+    
+    %\draw[->](API.west) -- ++(-4.5,0) -- node[left]{$r = \begin{bmatrix} x_G \\ y_G \\ \Delta_x \\ \Delta_y \end{bmatrix}$}(ret2.center) --(RegulateurLQ.220);
+    
+    %\draw[->](API.west) -- ++(-4.5,0) -- ++(0,3) -- node[left=1em]{$r = \begin{bmatrix} x_G \\ y_G \\ d_x \\ d_y \end{bmatrix}$}(RegulateurLQ.220);
+    
+
+\end{tikzpicture}
