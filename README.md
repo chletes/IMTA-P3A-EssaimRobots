@@ -26,9 +26,11 @@ IMT Atlantique 3rd year project - Localization system for a swarm of mobile robo
 │		└── ModemAPI_v2/
 │
 └─── assets
-	│
-	└─── img/
-	└─── diagrams/
+│	│
+│	└─── img/
+│	└─── diagrams/
+│
+└─── doc
 
 ```
 
@@ -44,6 +46,7 @@ IMT Atlantique 3rd year project - Localization system for a swarm of mobile robo
 	- `marvelmind_interfaces_10_02_2022.pdf` : Main guide in the communication chain
 	- `marvelmind_SW_2021_09_29` : Original APIs (from MarvelMind's official site)
 - `assets` : Folder containing images and diagrams used in readmes. 
+- `doc` : Folder containing LaTeX files used to write project reports. It is synchronized with Overleaf in order to edit and compile the pdf file. 
 
 ## Communication chain 
 
