@@ -74,6 +74,13 @@ void loop(){
     #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
       printPosition();
     #endif
+    if(uncoupling_ready){
+      uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
+      velocity_PID();
+//      if(hh_target_X==hh_actual_X+0.5 && hh_target_Y== hh_actual_Y+0.5){
+//        uncoupling_ready=false;
+//        }
+      }
   }
 
   if (hh_commande_update_flag){
@@ -81,9 +88,9 @@ void loop(){
     // Variables hh_target_X, hh_target_Y disponibles.
 
     // appels a PID
-    //calculate commandes for robot
-    uncoupling_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
-    velocity_PID();
+    uncoupling_ready = true;
+    //uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
+
     // robots control
     #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
       ledRed(1);

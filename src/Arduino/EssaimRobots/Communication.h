@@ -31,13 +31,14 @@
 #define HH_REQUEST_PATH_CODE 0x0201
 #define HH_REQUEST_PATH_DATASIZE 0x0c //0x0c = 12
 
-extern  long  hh_actual_X, hh_actual_Y;  // coordinates of hedgehog (X,Y), mm
-extern  long  hh_actual_Z;        // height of hedgehog, mm
+extern  float  hh_actual_X, hh_actual_Y;  // coordinates of hedgehog (X,Y), mm
+extern  float  hh_actual_Z;        // height of hedgehog, mm
 
-extern  long  hh_target_X, hh_target_Y;
+extern  float  hh_target_X, hh_target_Y;
 
 extern  bool  hh_position_update_flag; // flag of new data from hedgehog received
 extern  bool  hh_commande_update_flag;
+extern  bool  uncoupling_ready;
 extern  bool  high_resolution_mode;    // by default set to false in Dashboard
 
 extern  byte  hh_buffer[HH_BUF_SIZE];
