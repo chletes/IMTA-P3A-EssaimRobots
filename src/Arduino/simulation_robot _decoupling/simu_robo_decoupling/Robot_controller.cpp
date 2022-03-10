@@ -3,77 +3,40 @@
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
  *
- * File: Controllers.cpp
+ * File: Robot_controller.c
  *
- * Code generated for Simulink model 'uncoupling'.
+ * Code generated for Simulink model 'decoupling'.
  *
- * Model version                  : 1.12
+ * Model version                  : 1.19
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Wed Feb 16 20:57:46 2022
+ * C/C++ source code generated on : Mon Mar  7 11:30:05 2022
  *
  * Target selection: ert.tlc
- * Embedded hardware selection: Intel->x86-64 (Windows64)
+ * Embedded hardware selection: Atmel->AVR
  * Code generation objectives: Unspecified
  * Validation result: Not run
  */
-#include <Arduino.h>
-#include "Controllers.h"
 
-byte measure_flag = LOW;
-// float x_ref;                          /* '<Root>/x' == hh_target_X  */
-// float y_ref;                          /* '<Root>/y' == hh_target_Y  */
-// float x_feedback;                     /* '<Root>/x1' == hh_actual_X */
-// float y_feedback;                     /* '<Root>/y1' == hh_actual_Y */
-float theta = 0;                          /* '<Root>/theta ' */
-float Vd_t;                           /* '<Root>/capteur Vd' */
-float Vg_t;                           /* '<Root>/capteur Vg' */
-float Vd;                             /* '<Root>/Consigne Vd' */
-float Vg;                             /* '<Root>/Consigne Vg' */
-float Ti=0;
-float Tf;
+#include "Robot_controller.h"
 
-PIDController pidg;
-PIDController pidd;
-Zumo32U4Encoders encoder;
-Zumo32U4Motors  motors;
+/* Include model header file for global data */
+#include "decoupling.h"
+#include "decoupling_private.h"
 
-void setup_Velocity_PID(){
-  pidg.begin();          // initialize the PID instance
-  pidg.tune(Kp, Ki, Kd);    // Tune the PID, arguments: kP, kI, kD
-  pidg.limit(-255, 255);    // Limit the PID output between 0 and 255, this is important to get rid of integral windup!
-  pidd.begin();          
-  pidd.tune(Kp, Ki, Kd); 
-  pidd.limit(-255, 255);
-}
-void update_theta_v(float Vd_t, float Vg_t, float dt){
-  theta += (Vd_t - Vg_t)/L *dt;
-}
-void velocity_PID(){
-  pidg.setpoint(Vg);    // The "goal" the PID controller tries to "reach"
-  pidd.setpoint(Vd);    // The "goal" the PID controller tries to "reach"
-  Tf=millis();
-  float Time = Ti-Tf;
-  Vg_t=encoder.getCountsAndResetLeft()*2*Pi*R/(10000*12)/Time;
-  Vd_t=encoder.getCountsAndResetRight()*2*Pi*R/(10000*12)/Time;
-  Ti=millis();
-  update_theta_v(Vd_t, Vg_t, Time);
-  int output_g = pidg.compute(Vg_t);    // Let the PID compute the value, returns the optimal output
-  int output_d = pidd.compute(Vd_t);    // Let the PID compute the value, returns the optimal output
-  motors.setLeftSpeed(output_g);
-  motors.setRightSpeed(output_g);
-}
+#define Ts 0.1
 
 /* System initialize for atomic system: '<Root>/Robot_controller' */
-void uncoupling_controller_init(DW_uncouping_controller_T *localDW)
+void decouplin_Robot_controller_Init(DW_Robot_controller_decouplin_T *localDW)
 {
   /* InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' */
   localDW->DiscreteTimeIntegrator_DSTATE = 0.05;
 }
 
-void uncoupling_controller(real_T rtu_x_ref, real_T rtu_y_ref, real_T
+/* Output and update for atomic system: '<Root>/Robot_controller' */
+void decoupling_Robot_controller(real_T rtu_x_ref, real_T rtu_y_ref, real_T
   rtu_x_feedback, real_T rtu_y_feedback, real_T rtu_theta, real_T *rty_Vd,
-  real_T *rty_Vg, B_Robot_controller_decouplant_T *localB,
-  DW_uncouping_controller_T *localDW, float Ts)
+  real_T *rty_Vg, B_Robot_controller_decoupling_T *localB,
+  DW_Robot_controller_decouplin_T *localDW)
 {
   real_T rtb_Sum;
   real_T rtb_FilterCoefficient;
@@ -88,11 +51,11 @@ void uncoupling_controller(real_T rtu_x_ref, real_T rtu_y_ref, real_T
    *  DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
    */
   if (localDW->DiscreteTimeIntegrator_DSTATE > Vm) {
-    localB->Saturation = Vm;
+    localB->Saturation1 = Vm;
   } else if (localDW->DiscreteTimeIntegrator_DSTATE < -Vm) {
-    localB->Saturation = -Vm;
+    localB->Saturation1 = -Vm;
   } else {
-    localB->Saturation = localDW->DiscreteTimeIntegrator_DSTATE;
+    localB->Saturation1 = localDW->DiscreteTimeIntegrator_DSTATE;
   }
 
   /* End of Saturate: '<S1>/Saturation1' */
@@ -136,8 +99,8 @@ void uncoupling_controller(real_T rtu_x_ref, real_T rtu_y_ref, real_T
    */
   tmp = cos(rtu_theta);
   tmp_0 = sin(rtu_theta);
-  *rty_Vg = -tmp_0 / localB->Saturation * rtb_Sum_o + tmp /
-    localB->Saturation * rtb_Sum_l;
+  *rty_Vg = -tmp_0 / localB->Saturation1 * rtb_Sum_o + tmp / localB->Saturation1
+    * rtb_Sum_l;
 
   /* Product: '<S1>/Product' incorporates:
    *  Constant: '<S1>/L//2'
@@ -145,10 +108,10 @@ void uncoupling_controller(real_T rtu_x_ref, real_T rtu_y_ref, real_T
   *rty_Vg *= L / 2.0;
 
   /* Sum: '<S1>/Sum2' */
-  *rty_Vd = localB->Saturation + *rty_Vg;
+  *rty_Vd = localB->Saturation1 + *rty_Vg;
 
   /* Sum: '<S1>/Sum3' */
-  *rty_Vg = localB->Saturation - *rty_Vg;
+  *rty_Vg = localB->Saturation1 - *rty_Vg;
 
   /* Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' incorporates:
    *  Fcn: '<S1>/linearisation calcul u1'
@@ -172,3 +135,9 @@ void uncoupling_controller(real_T rtu_x_ref, real_T rtu_y_ref, real_T
   /* Update for DiscreteIntegrator: '<S72>/Filter' */
   localDW->Filter_DSTATE_c += Ts * rtb_FilterCoefficient_l;
 }
+
+/*
+ * File trailer for generated code.
+ *
+ * [EOF]
+ */

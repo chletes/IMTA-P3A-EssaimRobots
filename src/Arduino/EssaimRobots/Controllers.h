@@ -4,7 +4,7 @@
  * @Author: Wentao GONG
  * @Date: 2022-02-10 21:13:45
  * @LastEditors: Wentao GONG
- * @LastEditTime: 2022-03-03 22:00:15
+ * @LastEditTime: 2022-03-07 11:46:02
  */
 /*
  * Academic License - for use in teaching, academic research, and meeting
@@ -49,7 +49,7 @@ extern  float Tf;
 
 extern  PIDController  pidg;
 extern  PIDController  pidd;
-extern  Zumo32U4Encoders  Encoder;
+extern  Zumo32U4Encoders  encoder;
 extern  Zumo32U4Motors  motors;
 
 #define Kp 260 //Propotional constant
@@ -86,13 +86,13 @@ extern  Zumo32U4Motors  motors;
                                         *   '<S38>/Proportional Gain'
                                         *   '<S82>/Proportional Gain'
                                         */
-#define Vm  40                       // Variable: Vm cm/s
+#define Vm  50                       // Variable: Vm cm/s
 
 typedef float real_T;
 
 /* Block signals for system '<Root>/Robot_controller' */
 typedef struct {
-  real_T addantiwindup;                /* '<S1>/Saturation1' */
+  real_T Saturation;                /* '<S1>/Saturation1' */
 } B_Robot_controller_decouplant_T;
 
 /* Block states (default storage) for system '<Root>/Robot_controller' */

@@ -61,7 +61,11 @@ void loop(){
     //lightLEDS();
 
     //update_theta_v(Vd_t, Vg_t, delta_t_position_update); // update theta and v_centre
-
+    //test
+      //test
+//    Vg = 200;
+//    Vd = 200;
+//    velocity_PID();
   }
 
   if (hh_commande_update_flag){
@@ -70,10 +74,12 @@ void loop(){
 
     // appels a PID
     //calculate commandes for robot
-    uncoupling_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta,  &Vd, &Vg, &Robot_controller,&uncoupling_controller_T, 0.5);
+    //uncoupling_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta,  &Vd, &Vg, &Robot_controller,&uncoupling_controller_T, 0.5);
+    uncoupling_controller(1,1,)
     velocity_PID();
     // robots control
   }
+
 }
 
 /*void printPosition(){ //Only for Arduino MEGA, several Serial needs to be implemented
