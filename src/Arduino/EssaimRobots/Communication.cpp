@@ -3,8 +3,8 @@
 //////////////////////////////////////////////////////////////////////////////
 ////////////////////MARVELMIND HEDGEHOG RELATED PART//////////////////////////
 
-long  hh_actual_X, hh_actual_Y;  // coordinates of hedgehog (X,Y), mm
-long  hh_actual_Z;        // height of hedgehog, mm
+long  hh_actual_X, hh_actual_Y;  // coordinates of hedgehog (X,Y), cm
+long  hh_actual_Z;        // height of hedgehog, cm
 
 long hh_target_X, hh_target_Y;
 
@@ -23,8 +23,11 @@ unsigned int paired_heading;
 
 //    Marvelmind hedgehog setup initialize
 void setup_hedgehog(){
-  Serial1.begin(115200); // for Pololu Zumo 32U4
-  //Serial3.begin(115200); // for Arduino MEGA
+  #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+    Serial1.begin(115200); 
+  #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
+    Serial3.begin(115200); 
+  #endif
 
   hh_position_update_flag = false;
   hh_commande_update_flag = false;
@@ -40,18 +43,23 @@ void loop_hedgehog(){
   bool packet_received = false;
   bool good_byte = false;
   byte hh_packet_size;
-  
-  while(Serial1.available() > 0){ // for Pololu Zumo 32U4
-  //while(Serial3.available() > 0){ // for Arduino MEGA
+  #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+    while(Serial1.available() > 0){ 
+  #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
+    while(Serial3.available() > 0){
+  #endif
     if (hh_buffer_index >= HH_BUF_SIZE){
       hh_buffer_index= 0; // restart buffer fill
       break;              // buffer overflow
     }
     bytes_received_in_loop++;
     if (bytes_received_in_loop>100) break;// too much data without required header
-      
-    incoming_byte = Serial1.read(); // for Pololu Zumo 32U4
-    //incoming_byte = Serial3.read(); // for Arduino MEGA
+    
+    #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+      incoming_byte = Serial1.read();
+    #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560s
+      incoming_byte = Serial3.read();
+    #endif
     
     good_byte = false;
     switch(hh_buffer_index){
@@ -67,8 +75,8 @@ void loop_hedgehog(){
                       (incoming_byte == HH_ACK_TYPE) ||
                       (incoming_byte == HH_REQUEST_PATH_TYPE) );
         hh_packet_type = incoming_byte;
-        #if TOTAL_DEBUGGING
-        //Serial.println("1. Checking packet type");
+        #if TOTAL_DEBUGGING && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+        Serial.println("1. Checking packet type");
         #endif
         break;
       }
@@ -84,8 +92,8 @@ void loop_hedgehog(){
         good_byte=   (hh_packet_id == HH_STREAM_POSITION_CODE) ||
                      (hh_packet_id == HH_RX_POSITION_HIGHRES_CODE) ||
                      (hh_packet_id == HH_REQUEST_PATH_CODE);
-        #if TOTAL_DEBUGGING
-        //Serial.println("2. Checking packet id");
+        #if TOTAL_DEBUGGING && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+        Serial.println("2. Checking packet id");
         #endif
         break;
       }
@@ -104,9 +112,9 @@ void loop_hedgehog(){
           }
           case HH_REQUEST_PATH_CODE:
           {
-            #if TOTAL_DEBUGGING
-            //Serial.print("4. Checking request packet data size: ");
-            //Serial.println(7+incoming_byte);
+            #if TOTAL_DEBUGGING && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+            Serial.print("4. Checking request packet data size: ");
+            Serial.println(7+incoming_byte);
             #endif
             good_byte= (incoming_byte == HH_REQUEST_PATH_DATASIZE);
             break;
@@ -148,8 +156,8 @@ void loop_hedgehog(){
           HH_process_stream_position_packet();
           break;
         case HH_REQUEST_PATH_TYPE:
-          #if TOTAL_DEBUGGING
-          //Serial.println("5. Request packet received");
+          #if TOTAL_DEBUGGING && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+          Serial.println("5. Request packet received");
           #endif
           HH_process_write_packet();
           break;
@@ -246,8 +254,8 @@ void HH_process_write_packet(){
   long param_movement_0, param_movement_1, param_movement_2;
   
   if (hh_packet_id == HH_REQUEST_PATH_CODE){ // Set Mouvement Path packet
-    #if TOTAL_DEBUGGING
-    //Serial.println("6. Processing write packet");
+    #if TOTAL_DEBUGGING && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+    Serial.println("6. Processing write packet");
     #endif
 
     type_of_mouvement = hh_buffer[5];
@@ -268,11 +276,11 @@ void HH_process_write_packet(){
     
     //bytes from 14:16 are reserved
     hh_commande_update_flag = true;
-    #if TOTAL_DEBUGGING || HH_REQUEST_PATH_CODE_DEBUGGING
-    /*Serial.print("Packet 0x201 received (");
-    //Serial.print(">> Index of this elementary movement : ");
+    #if defined(__AVR_ATmega2560__) // Arduino Mega 2560
+    Serial.print("Packet 0x201 received (");
+    Serial.print(">> Index of this elementary movement : ");
     Serial.print(index);
-    //Serial.print(">> Total number of elementary movements : ");
+    Serial.print(">> Total number of elementary movements : ");
     Serial.print("/");
     Serial.print(total_mouvements);
     Serial.println(").");
@@ -313,9 +321,9 @@ void HH_process_write_packet(){
       default:{
         break;
       }
-    }*/
+    }
     
-    /*switch(type_of_mouvement){
+    switch(type_of_mouvement){
       case 0:
       case 1:{
         Serial.print(">> Distance of mouvement (cm): ");
@@ -351,12 +359,10 @@ void HH_process_write_packet(){
       default:{
         break;
       }
-    }*/
+    }
     #endif
     
-    
-    // send answer packet
-    HH_send_write_answer_success();
+    HH_send_write_answer_success(); // send answer packet
   }
 }
 
@@ -380,8 +386,11 @@ void HH_send_packet(byte address, byte packet_type, unsigned int id, byte data_s
   }
   hh_set_crc16(&hh_buffer[0], frameSizeBeforeCRC);
 
-  Serial.write(hh_buffer, frameSizeBeforeCRC + 2); // for Pololu Zumo 32U4
-  //Serial3.write(hh_buffer, frameSizeBeforeCRC + 2); // for Arduino MEGA
+  #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+  Serial.write(hh_buffer, frameSizeBeforeCRC + 2);
+  #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
+  Serial3.write(hh_buffer, frameSizeBeforeCRC + 2);
+  #endif
 }
 
 void HH_send_ack_ready(byte status){

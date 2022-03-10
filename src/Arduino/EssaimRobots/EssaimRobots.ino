@@ -27,16 +27,28 @@
 #include "Globals.h"
 #include "Communication.h"
 #include "Controllers.h"
-// PololuBuzzer buzzer; // Comment when using Arduino MEGA
+
+#if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+  #include <Zumo32U4.h>
+  #include <PololuBuzzer.h>
+  PololuBuzzer buzzer;
+#elif defined(__AVR_ATmega2560__)// Arduino Mega 2560
+
+#else
+  #error “Unsupported board selected!”
+#endif
+
 
 DW_uncouping_controller_T uncoupling_controller_T;
 
 void setup_debug(){
-  //ledYellow(0); // Comment when using Arduino MEGA
-  //ledRed(0); // Comment when using Arduino MEGA
-  //ledGreen(0); // Comment when using Arduino MEGA
-
-  //Serial.begin(115200); // Comment when using Pololu Zumo 32U4
+  #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+    ledYellow(0); 
+    ledRed(0); 
+    ledGreen(0); 
+  #elif defined(__AVR_ATmega2560__)// Arduino Mega 2560
+    Serial.begin(115200); 
+  #endif
 }
 
 void setup(){
@@ -55,12 +67,13 @@ void loop(){
     hh_position_update_flag = false;  // clear new data flag 
     // Variables hh_actual_X, hh_actual_Y disponibles.
     
-    //printPosition();
-    //playBuzzer();
-    //lightLEDS();
-
-    //update_theta_v(Vd_t, Vg_t, delta_t_position_update); // update theta and v_centre
-
+    #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+      ledYellow(1);
+      //playBuzzer();
+      //lightLEDS();
+    #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
+      printPosition();
+    #endif
   }
 
   if (hh_commande_update_flag){
@@ -72,33 +85,14 @@ void loop(){
     uncoupling_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
     velocity_PID();
     // robots control
+    #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+      ledRed(1);
+    #endif
   }
 }
 
-/*void printPosition(){ //Only for Arduino MEGA, several Serial needs to be implemented
-    byte coord_precision;
-    char buf[12];
-
-    if (high_resolution_mode){
-      coord_precision= 3;
-    }else{
-      coord_precision= 2; 
-    }
-    
-    Serial.print("X="); 
-    dtostrf(((float) hh_actual_X)/1000.0f, 4, coord_precision, buf);
-    Serial.print(buf); 
-    
-    Serial.print("\tY="); 
-    dtostrf(((float) hh_actual_Y)/1000.0f, 4, coord_precision, buf);
-    Serial.print(buf); 
-    
-    Serial.print("\tZ="); 
-    dtostrf(((float) hh_actual_Z)/1000.0f, 4, coord_precision, buf);
-    Serial.println(buf); 
-}*/
-
-/*void playBuzzer(){ // Comment when using Arduino MEGA
+#if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+void playBuzzer(){
   byte coord_precision;
   char buf[12];
     
@@ -128,9 +122,9 @@ void loop(){
     delay(300);
     buzzer.stopPlaying();
   }
-}*/
+}
 
-/*void lightLEDS(){ // Comment when using Arduino MEGA
+void lightLEDS(){
   byte coord_precision;
   char buf[12];
     
@@ -158,4 +152,28 @@ void loop(){
   ledYellow(0);
   ledRed(0);
   ledGreen(0);
-}*/
+}
+#elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
+void printPosition(){
+    byte coord_precision;
+    char buf[12];
+
+    if (high_resolution_mode){
+      coord_precision= 3;
+    }else{
+      coord_precision= 2; 
+    }
+    
+    Serial.print("X="); 
+    dtostrf(((float) hh_actual_X)/1000.0f, 4, coord_precision, buf);
+    Serial.print(buf); 
+    
+    Serial.print("\tY="); 
+    dtostrf(((float) hh_actual_Y)/1000.0f, 4, coord_precision, buf);
+    Serial.print(buf); 
+    
+    Serial.print("\tZ="); 
+    dtostrf(((float) hh_actual_Z)/1000.0f, 4, coord_precision, buf);
+    Serial.println(buf); 
+}
+#endif

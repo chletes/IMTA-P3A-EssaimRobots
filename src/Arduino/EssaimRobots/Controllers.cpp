@@ -35,8 +35,11 @@ float Tf;
 
 PIDController pidg;
 PIDController pidd;
-Zumo32U4Encoders Encoder;
+
+#if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+Zumo32U4Encoders encoder;
 Zumo32U4Motors  motors;
+#endif
 
 void setup_Velocity_PID(){
   pidg.begin();          // initialize the PID instance
@@ -55,14 +58,28 @@ void velocity_PID(){
   pidd.setpoint(Vd);    // The "goal" the PID controller tries to "reach"
   Tf=millis();
   float Time = Ti-Tf;
-  Vg_t=Encoder.getCountsAndResetLeft()*2*Pi*R/(100*12)/Time;
-  Vd_t=Encoder.getCountsAndResetRight()*2*Pi*R/(100*12)/Time;
+  #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+    Vg_t=encoder.getCountsAndResetLeft()*2*Pi*R/(100*12)/Time;
+    Vd_t=encoder.getCountsAndResetRight()*2*Pi*R/(100*12)/Time;
+  #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
+    Vg_t = 1;
+    Vd_t = 1;
+  #endif
+  
   Ti=millis();
   update_theta_v(Vd_t, Vg_t, Time);
   int output_g = pidg.compute(Vg);    // Let the PID compute the value, returns the optimal output
   int output_d = pidd.compute(Vd);    // Let the PID compute the value, returns the optimal output
+  
+  #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
   motors.setLeftSpeed(output_g);
-  motors.setRightSpeed(output_g);
+  motors.setRightSpeed(output_d);
+  #elif TOTAL_DEBUGGING && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+  Serial.print("output_g: ");
+  Serial.print(output_g);
+  Serial.print("\t output_d: ");
+  Serial.println(output_d);
+  #endif
 }
 /* System initialize for atomic system: '<Root>/Robot_controller' */
 void uncoupling_controller_init(DW_uncouping_controller_T *localDW){

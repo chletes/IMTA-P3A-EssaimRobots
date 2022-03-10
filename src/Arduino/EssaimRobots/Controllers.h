@@ -28,11 +28,16 @@
 #ifndef Controllers_h
 #define Controllers_h
 #include "Arduino.h"
-#include <Zumo32U4.h> 
-#include <Zumo32U4Encoders.h>
+#include "Globals.h"
 #include <Wire.h>
 #include <PIDController.h>
 #include <math.h>                               /* uncoupling_COMMON_INCLUDES_ */
+
+#if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+#include <Zumo32U4.h> 
+#include <Zumo32U4Encoders.h>
+#endif
+
 
 extern  byte measure_flag;
 // extern  float x_ref;                          /* '<Root>/x' == hh_target_X  */
@@ -50,8 +55,10 @@ extern  float Tf;
 
 extern  PIDController  pidg;
 extern  PIDController  pidd;
+#if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
 extern  Zumo32U4Encoders  Encoder;
 extern  Zumo32U4Motors  motors;
+#endif
 
 #define Kp 260 //Propotional constant
 #define Ki 0 //Integral constant
