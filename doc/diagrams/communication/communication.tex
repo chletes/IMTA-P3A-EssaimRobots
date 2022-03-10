@@ -15,7 +15,7 @@
 	% Drawing the blocks of first filter :
 	%node at (0,0)[]{}%{\Large \textopenbullet}
 	%node [input, name=input1]{} 
-	node at (0,0)[]{}
+	node at (2,0)[]{}
 	node [input, name= input1]{}
 	node at (3,0)[block] (SC) {Système Centrale}
 	%node at (13,2.25) (ret1) {Perturbations}
@@ -45,9 +45,9 @@
     \draw[->](Dashboard.south west) to[out=-135, in=-45] node [below=3pt]{}(SC.south east);
     
     \draw [color=gray,thick](1.25,-1.25) rectangle (8.3,1.25);
-    \node at (1.25,-1.25) [below=3mm, right=0mm] {\textsc{Ordinateur}};
+    \node at (1.25,-1.45) [below=3mm, right=0mm] {\textsc{Ordinateur}};
     
     \draw [color=gray,thick](9.75,-1.25) rectangle (15.50,1.25);
-    \node at (9.75,-1.25) [below=3mm, right=0mm] {\textsc{Pololu + Hedgehog }};
+    \node at (9.75,-1.45) [below=3mm, right=0mm] {\textsc{Pololu + Hedgehog }};
 
 \end{tikzpicture}
