@@ -3,13 +3,14 @@
 //////////////////////////////////////////////////////////////////////////////
 ////////////////////MARVELMIND HEDGEHOG RELATED PART//////////////////////////
 
-long  hh_actual_X, hh_actual_Y;  // coordinates of hedgehog (X,Y), mm
-long  hh_actual_Z;        // height of hedgehog, mm
+float  hh_actual_X, hh_actual_Y;  // coordinates of hedgehog (X,Y), mm
+float hh_actual_Z;        // height of hedgehog, mm
 
-long hh_target_X, hh_target_Y;
+float hh_target_X, hh_target_Y;
 
 bool  hh_position_update_flag; // flag of new data from hedgehog received
 bool  hh_commande_update_flag;
+bool  uncoupling_ready;
 bool  high_resolution_mode;    // by default set to false in Dashboard
 
 byte  hh_buffer[HH_BUF_SIZE];

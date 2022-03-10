@@ -53,10 +53,10 @@ extern  PIDController  pidd;
 extern  Zumo32U4Encoders  Encoder;
 extern  Zumo32U4Motors  motors;
 
-#define Kp 260 //Propotional constant
+#define Kp 100  //Propotional constant260
 #define Ki 0 //Integral constant
 #define Kd 0 //Derivative constant
-#define R 0.2 // ray of wheel
+#define R 0.03 // ray of wheel
 #define Pi 3.141592653589
 
 #define D_t  42.0                     
@@ -71,7 +71,7 @@ extern  Zumo32U4Motors  motors;
                                         *   '<S30>/Integral Gain'
                                         *   '<S74>/Integral Gain'
                                         */
-#define L  0.085                      
+#define L  0.06                     
                                         /* Variable: L
                                         * Referenced by: '<S1>/L//2'
                                         */
@@ -87,7 +87,7 @@ extern  Zumo32U4Motors  motors;
                                         *   '<S38>/Proportional Gain'
                                         *   '<S82>/Proportional Gain'
                                         */
-#define Vm  5.0                         // Variable: Vm 
+#define Vm  400.0                         // Variable: Vm 
 
 typedef float real32_T;
 
@@ -106,9 +106,9 @@ extern void velocity_PID();
 extern void uncoupling_controller_init(DW_uncouping_controller_T
   *localDW);
 
-extern void uncoupling_controller(real32_T rtu_x_ref, real32_T rtu_y_ref,
-  real32_T rtu_x_feedback, real32_T rtu_y_feedback, real32_T rtu_theta, real32_T
-  rtu_v_center, real32_T Ts, real32_T *rty_Vd, real32_T *rty_Vg, DW_uncouping_controller_T *
+extern void uncoupling_controller(real32_T *rtu_x_ref, real32_T *rtu_y_ref,
+  real32_T *rtu_x_feedback, real32_T *rtu_y_feedback, real32_T rtu_theta, real32_T
+  *rtu_v_center, real32_T Ts, real32_T *rty_Vd, real32_T *rty_Vg, DW_uncouping_controller_T *
   localDW);
 
 #endif                                 /* RTW_HEADER_Controllers_h_ */

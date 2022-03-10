@@ -58,9 +58,18 @@ void loop(){
     //printPosition();
     //playBuzzer();
     //lightLEDS();
-
-    //update_theta_v(Vd_t, Vg_t, delta_t_position_update); // update theta and v_centre
-
+    // appels a PID
+    //calculate commandes for robot
+    //update_theta_v(Vd_t, Vg_t, delta_t_position_update); //update theta and v_centre
+  ledYellow(1);
+    if(uncoupling_ready)
+    {
+      uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
+      velocity_PID();
+//      if(hh_target_X==hh_actual_X+0.5 && hh_target_Y== hh_actual_Y+0.5){
+//        uncoupling_ready=false;
+//        }
+      }
   }
 
   if (hh_commande_update_flag){
@@ -69,8 +78,10 @@ void loop(){
 
     // appels a PID
     //calculate commandes for robot
-    uncoupling_controller(hh_target_X, hh_target_Y, hh_actual_X, hh_actual_Y, theta, v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
-    velocity_PID();
+    uncoupling_ready = true;
+//    uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
+//    velocity_PID();
+    ledRed(1);
     // robots control
   }
 }
