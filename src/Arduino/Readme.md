@@ -1,4 +1,14 @@
-## How communication between Marvelmind Hedgehog and Pololu Zumo works
+# Arduino folder
+
+* We use the official Arduino IDE to compile and upload the code.
+    * It is necessary to follow [this guide](https://www.pololu.com/docs/0J63/5.2) in order to install Pololu board descriptions and use the Arduino IDE. Windows users, check [the precedent guide](https://www.pololu.com/docs/0J63/5.1). 
+    * In order to use the Zumo 32U4 library and compile on Arduino IDE, follow [this guide](https://pololu.github.io/zumo-32u4-arduino-library/) also. 
+
+* Folders `Hedgehog_MEGA_TXonly` and `Hedgehog_Zumo32U4_TXonly` are just test sketches to receive actual position from hedgehogs connected to the Arduino Mega 2560 and Pololu Zumo 32U4, respectively. 
+
+* `EssaimRobot` folder contains the main sketch. It uses preprocessor directives in order to be able to compile the sketch being the target board an Arduino Mega 2560 or a Pololu Zumo 32U4. 
+
+## How _Marvelmind's Hedgehog_ and _Pololu Zumo_ communicate between each other
 
 ### Marvelmind protocol for streaming
 ![dashboard_command_example](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/chletes/IMTA-PS5-EssaimRobots/main/assets/diagrams/dashboard_command_example.iuml)
@@ -33,7 +43,10 @@ After this packet, a reply should be sent from the Zumo robot indicating that he
 | 4 | 1 | Data size  | `0x04` |
 | 5 | 2 | Checksum  | - |
 
-After this, the next packet is sent from the Modem (via Hedgehog) to the Zumo robot with the data itself (commands). The next example frame is the request of writing the movement path (packet ID (code) equals 0x0201), but other frames can be made using packet IDs going from 0x0203 to 0x02ff. 
+### Marvelmind protocol for sending data ('write' or 'request/response' packets)
+The precedent packet is mandatory to be sent. 
+
+After this, the next packet is sent from the Modem (via Hedgehog) to the Zumo robot with the data itself. The next example frame is the request of 'writing the movement path' (packet ID (code) equals 0x0201).
 
 | Offset | Size (bytes) | Description | Value |
 |:-:|:-:|:-:|:-:|
@@ -65,7 +78,7 @@ If the Zumo robot failed to process the request, it sends a response in the foll
 
 ## How to test sending command with Marvelmind's Dashboard
 
-0. We assume there's already a setup built (beacons installed and charged, hedgehog and Arduino Mega connexions done, modem connected, etc). 
+0. We assume there's already a setup built (beacons installed and charged, Arduino code uploaded, hedgehog and Arduino Mega connexions done, modem connected, etc). 
 1. Open Marvlemind's Dashboard and localize desired hedgehog in the lower pannel. Right-click and select "Set up mouvement path" and a new windows arises. 
 
 ![setup_mouvement_path](/assets/img/dashboard_command_example/setup_mouvement_path.png)

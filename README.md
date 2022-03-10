@@ -23,7 +23,7 @@ IMT Atlantique 3rd year project - Localization system for a swarm of mobile robo
 │	└─── marvelmind_SW_2021_09_29
 │		│
 │		└── ModemAPI_v1/
-│		└── ModemAPI_v2/
+│		└── ModemAPI_v2/ 
 │
 └─── assets
 │	│
@@ -40,7 +40,7 @@ IMT Atlantique 3rd year project - Localization system for a swarm of mobile robo
 		- `Hedgehog_Zumo32U4_TXonly` : Unit Test - UART reception on Pololu Zumo 32U4 from Marvelmind Hedgehog
 		- `EssaimRobots` : Main program
 	- `ModemAPI` : Folder containing the API implementation 
-		- `ModemAPI_v1` : "deprecated" API
+		- `ModemAPI_v1` : :warning: deprecated API
 		- `ModemAPI_v2` : newer API that uses a library
 - `ressources` : Folder containing some ressources used in our implementation
 	- `marvelmind_interfaces_10_02_2022.pdf` : Main guide in the communication chain
