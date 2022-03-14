@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'decoupling'.
  *
- * Model version                  : 1.19
+ * Model version                  : 1.20
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Mon Mar  7 11:30:05 2022
+ * C/C++ source code generated on : Thu Mar 10 18:19:30 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Atmel->AVR
@@ -52,11 +52,10 @@ real_T P_t = 82.0;                     /* Variable: P_t
                                         *   '<S82>/Proportional Gain'
                                         */
 real_T Vm = 5.0;                       /* Variable: Vm
-                                        * Referenced by: '<S1>/Saturation1'
+                                        * Referenced by:
+                                        *   '<S1>/Saturation1'
+                                        *   '<S1>/Saturation2'
                                         */
-
-/* Block signals (default storage) */
-B_decoupling_T decoupling_B;
 
 /* Block states (default storage) */
 DW_decoupling_T decoupling_DW;
@@ -100,8 +99,7 @@ void decoupling_step(void)
      *  Outport: '<Root>/Vd'
      */
     decoupling_Robot_controller(x_ref, y_ref, x_feedback, y_feedback, theta,
-      &decoupling_Y.Vd, &decoupling_Y.Vg, &decoupling_B.Robot_controller,
-      &decoupling_DW.Robot_controller);
+      &decoupling_Y.Vd, &decoupling_Y.Vg, &decoupling_DW.Robot_controller);
 
     /* End of Outputs for SubSystem: '<Root>/Robot_controller' */
   }

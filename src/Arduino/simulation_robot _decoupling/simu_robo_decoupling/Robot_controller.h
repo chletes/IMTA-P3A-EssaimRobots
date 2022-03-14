@@ -1,4 +1,12 @@
 /*
+ * @Descripttion: 
+ * @version: 
+ * @Author: Wentao GONG
+ * @Date: 2022-03-03 22:24:06
+ * @LastEditors: Wentao GONG
+ * @LastEditTime: 2022-03-10 18:41:23
+ */
+/*
  * Academic License - for use in teaching, academic research, and meeting
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
@@ -7,9 +15,9 @@
  *
  * Code generated for Simulink model 'decoupling'.
  *
- * Model version                  : 1.19
+ * Model version                  : 1.20
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Mon Mar  7 11:30:05 2022
+ * C/C++ source code generated on : Thu Mar 10 18:19:30 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Atmel->AVR
@@ -25,12 +33,7 @@
 #include "rtwtypes.h"
 #endif                                 /* decoupling_COMMON_INCLUDES_ */
 
-#include "decoupling_types.h"
-
-/* Block signals for system '<Root>/Robot_controller' */
-typedef struct {
-  real_T Saturation1;                  /* '<S1>/Saturation1' */
-} B_Robot_controller_decoupling_T;
+#include "parameters.h"
 
 /* Block states (default storage) for system '<Root>/Robot_controller' */
 typedef struct {
@@ -45,8 +48,7 @@ extern void decouplin_Robot_controller_Init(DW_Robot_controller_decouplin_T
   *localDW);
 extern void decoupling_Robot_controller(real_T rtu_x_ref, real_T rtu_y_ref,
   real_T rtu_x_feedback, real_T rtu_y_feedback, real_T rtu_theta, real_T *rty_Vd,
-  real_T *rty_Vg, B_Robot_controller_decoupling_T *localB,
-  DW_Robot_controller_decouplin_T *localDW);
+  real_T *rty_Vg, DW_Robot_controller_decouplin_T *localDW);
 
 #endif                                 /* RTW_HEADER_Robot_controller_h_ */
 

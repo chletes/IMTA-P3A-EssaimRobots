@@ -4,7 +4,7 @@
  * @Author: Wentao GONG
  * @Date: 2022-03-03 22:24:06
  * @LastEditors: Wentao GONG
- * @LastEditTime: 2022-03-10 10:57:15
+ * @LastEditTime: 2022-03-10 18:41:39
  */
 /*
  * Academic License - for use in teaching, academic research, and meeting
@@ -30,7 +30,7 @@
 /* Include model header file for global data */
 #include "Model_robot.h"
 #include "Model_robot_private.h"
-#define Ts  0.1
+
 
 /* Output and update for atomic system: '<Root>/robot' */
 void Model_robot_robot(real_T rtu_Vd, real_T rtu_Vg, real_T *rty_x1, real_T

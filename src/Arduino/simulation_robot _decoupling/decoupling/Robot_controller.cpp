@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'decoupling'.
  *
- * Model version                  : 1.19
+ * Model version                  : 1.20
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Mon Mar  7 11:30:05 2022
+ * C/C++ source code generated on : Thu Mar 10 18:19:30 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Atmel->AVR
@@ -22,6 +22,7 @@
 /* Include model header file for global data */
 #include "decoupling.h"
 #include "decoupling_private.h"
+#define Ts 0.01
 
 /* System initialize for atomic system: '<Root>/Robot_controller' */
 void decouplin_Robot_controller_Init(DW_Robot_controller_decouplin_T *localDW)
@@ -33,8 +34,7 @@ void decouplin_Robot_controller_Init(DW_Robot_controller_decouplin_T *localDW)
 /* Output and update for atomic system: '<Root>/Robot_controller' */
 void decoupling_Robot_controller(real_T rtu_x_ref, real_T rtu_y_ref, real_T
   rtu_x_feedback, real_T rtu_y_feedback, real_T rtu_theta, real_T *rty_Vd,
-  real_T *rty_Vg, B_Robot_controller_decoupling_T *localB,
-  DW_Robot_controller_decouplin_T *localDW)
+  real_T *rty_Vg, DW_Robot_controller_decouplin_T *localDW)
 {
   real_T rtb_Sum;
   real_T rtb_FilterCoefficient;
@@ -44,19 +44,6 @@ void decoupling_Robot_controller(real_T rtu_x_ref, real_T rtu_y_ref, real_T
   real_T rtb_Sum_l;
   real_T tmp;
   real_T tmp_0;
-
-  /* Saturate: '<S1>/Saturation1' incorporates:
-   *  DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
-   */
-  if (localDW->DiscreteTimeIntegrator_DSTATE > Vm) {
-    localB->Saturation1 = Vm;
-  } else if (localDW->DiscreteTimeIntegrator_DSTATE < -Vm) {
-    localB->Saturation1 = -Vm;
-  } else {
-    localB->Saturation1 = localDW->DiscreteTimeIntegrator_DSTATE;
-  }
-
-  /* End of Saturate: '<S1>/Saturation1' */
 
   /* Sum: '<S1>/Sum' */
   rtb_Sum = rtu_x_ref - rtu_x_feedback;
@@ -93,45 +80,72 @@ void decoupling_Robot_controller(real_T rtu_x_ref, real_T rtu_y_ref, real_T
     rtb_FilterCoefficient_l;
 
   /* Fcn: '<S1>/linearisation calcul u2' incorporates:
+   *  DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
    *  Fcn: '<S1>/linearisation calcul u1'
    */
   tmp = cos(rtu_theta);
   tmp_0 = sin(rtu_theta);
-  *rty_Vg = -tmp_0 / localB->Saturation1 * rtb_Sum_o + tmp / localB->Saturation1
-    * rtb_Sum_l;
+  *rty_Vg = -tmp_0 / localDW->DiscreteTimeIntegrator_DSTATE * rtb_Sum_o + tmp /
+    localDW->DiscreteTimeIntegrator_DSTATE * rtb_Sum_l;
 
   /* Product: '<S1>/Product' incorporates:
    *  Constant: '<S1>/L//2'
    */
   *rty_Vg *= L / 2.0;
 
-  /* Sum: '<S1>/Sum2' */
-  *rty_Vd = localB->Saturation1 + *rty_Vg;
+  /* Sum: '<S1>/Sum2' incorporates:
+   *  DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
+   */
+  *rty_Vd = localDW->DiscreteTimeIntegrator_DSTATE + *rty_Vg;
 
-  /* Sum: '<S1>/Sum3' */
-  *rty_Vg = localB->Saturation1 - *rty_Vg;
+  /* Saturate: '<S1>/Saturation1' */
+  if (*rty_Vd > Vm) {
+    *rty_Vd = Vm;
+  } else {
+    if (*rty_Vd < -Vm) {
+      *rty_Vd = -Vm;
+    }
+  }
+
+  /* End of Saturate: '<S1>/Saturation1' */
+
+  /* Sum: '<S1>/Sum3' incorporates:
+   *  DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
+   */
+  *rty_Vg = localDW->DiscreteTimeIntegrator_DSTATE - *rty_Vg;
+
+  /* Saturate: '<S1>/Saturation2' */
+  if (*rty_Vg > Vm) {
+    *rty_Vg = Vm;
+  } else {
+    if (*rty_Vg < -Vm) {
+      *rty_Vg = -Vm;
+    }
+  }
+
+  /* End of Saturate: '<S1>/Saturation2' */
 
   /* Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' incorporates:
    *  Fcn: '<S1>/linearisation calcul u1'
    */
   localDW->DiscreteTimeIntegrator_DSTATE += (tmp * rtb_Sum_o + tmp_0 * rtb_Sum_l)
-    * 0.01;
+    * Ts;
 
   /* Update for DiscreteIntegrator: '<S33>/Integrator' incorporates:
    *  Gain: '<S30>/Integral Gain'
    */
-  localDW->Integrator_DSTATE += I_t * rtb_Sum * 0.01;
+  localDW->Integrator_DSTATE += I_t * rtb_Sum * Ts;
 
   /* Update for DiscreteIntegrator: '<S28>/Filter' */
-  localDW->Filter_DSTATE += 0.01 * rtb_FilterCoefficient;
+  localDW->Filter_DSTATE += Ts * rtb_FilterCoefficient;
 
   /* Update for DiscreteIntegrator: '<S77>/Integrator' incorporates:
    *  Gain: '<S74>/Integral Gain'
    */
-  localDW->Integrator_DSTATE_g += I_t * rtb_Sum1 * 0.01;
+  localDW->Integrator_DSTATE_g += I_t * rtb_Sum1 * Ts;
 
   /* Update for DiscreteIntegrator: '<S72>/Filter' */
-  localDW->Filter_DSTATE_c += 0.01 * rtb_FilterCoefficient_l;
+  localDW->Filter_DSTATE_c += Ts * rtb_FilterCoefficient_l;
 }
 
 /*

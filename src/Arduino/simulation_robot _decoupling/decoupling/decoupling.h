@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'decoupling'.
  *
- * Model version                  : 1.19
+ * Model version                  : 1.20
  * Simulink Coder version         : 9.2 (R2019b) 18-Jul-2019
- * C/C++ source code generated on : Mon Mar  7 11:30:05 2022
+ * C/C++ source code generated on : Thu Mar 10 18:19:30 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: Atmel->AVR
@@ -30,11 +30,6 @@
 #include "Robot_controller.h"
 
 /* Macros for accessing real-time model data structure */
-
-/* Block signals (default storage) */
-typedef struct {
-  B_Robot_controller_decoupling_T Robot_controller;/* '<Root>/Robot_controller' */
-} B_decoupling_T;
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
@@ -60,9 +55,6 @@ struct tag_RTM_decoupling_T {
     } TaskCounters;
   } Timing;
 };
-
-/* Block signals (default storage) */
-extern B_decoupling_T decoupling_B;
 
 /* Block states (default storage) */
 extern DW_decoupling_T decoupling_DW;
@@ -116,7 +108,9 @@ extern real_T P_t;                     /* Variable: P_t
                                         *   '<S82>/Proportional Gain'
                                         */
 extern real_T Vm;                      /* Variable: Vm
-                                        * Referenced by: '<S1>/Saturation1'
+                                        * Referenced by:
+                                        *   '<S1>/Saturation1'
+                                        *   '<S1>/Saturation2'
                                         */
 
 /* Model entry point functions */

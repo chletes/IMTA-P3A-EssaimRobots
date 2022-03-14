@@ -1,4 +1,12 @@
 /*
+ * @Descripttion: 
+ * @version: 
+ * @Author: Wentao GONG
+ * @Date: 2022-03-03 22:24:06
+ * @LastEditors: Wentao GONG
+ * @LastEditTime: 2022-03-10 18:41:46
+ */
+/*
  * Academic License - for use in teaching, academic research, and meeting
  * course requirements at degree granting institutions only.  Not for
  * government, commercial, or other organizational use.
@@ -26,6 +34,7 @@
 #endif                                 /* Model_robot_COMMON_INCLUDES_ */
 
 #include "Model_robot_types.h"
+#include "parameters.h"
 
 /* Block states (default storage) for system '<Root>/robot' */
 typedef struct {
