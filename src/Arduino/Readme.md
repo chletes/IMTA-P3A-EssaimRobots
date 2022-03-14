@@ -1,8 +1,9 @@
 # Arduino folder
 
-* We use the official Arduino IDE to compile and upload the code.
+* We use the official Arduino IDE to compile and upload the code. Follow instructions guidelines below. 
     * It is necessary to follow [this guide](https://www.pololu.com/docs/0J63/5.2) in order to install Pololu board descriptions and use the Arduino IDE. Windows users, check [the precedent guide](https://www.pololu.com/docs/0J63/5.1). 
     * In order to use the Zumo 32U4 library and compile on Arduino IDE, follow [this guide](https://pololu.github.io/zumo-32u4-arduino-library/) also. 
+    * Install the `PIDController` library using Arduino built-in "Manage libraries..." tool. 
 
 * Folders `Hedgehog_MEGA_TXonly` and `Hedgehog_Zumo32U4_TXonly` are just test sketches to receive actual position from hedgehogs connected to the Arduino Mega 2560 and Pololu Zumo 32U4, respectively. 
 
