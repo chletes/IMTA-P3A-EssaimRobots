@@ -38,7 +38,6 @@
   #error “Unsupported board selected!”
 #endif
 
-
 DW_uncouping_controller_T uncoupling_controller_T;
 
 void setup_debug(){
@@ -50,7 +49,6 @@ void setup_debug(){
     Serial.begin(115200); 
   #endif
 }
-
 void setup(){
   setup_hedgehog(); // Marvelmind hedgehog support initialize
   setup_debug();    // Serial connection to PC.
@@ -73,10 +71,15 @@ void loop(){
       //lightLEDS();
     #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
       printPosition();
+      //printTarget();
     #endif
     if(uncoupling_ready){
-      uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
+      #if defined(__AVR_ATmega2560__) // Arduino Mega 2560
+      printTarget();
+      #endif
+      uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.083, &Vd, &Vg, &uncoupling_controller_T);
       velocity_PID();
+      
 //      if(hh_target_X==hh_actual_X+0.5 && hh_target_Y== hh_actual_Y+0.5){
 //        uncoupling_ready=false;
 //        }
@@ -88,13 +91,14 @@ void loop(){
     // Variables hh_target_X, hh_target_Y disponibles.
 
     // appels a PID
+    //calculate commandes for robot
     uncoupling_ready = true;
-    //uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
-
-    // robots control
+//    uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
+//    velocity_PID();
     #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
       ledRed(1);
     #endif
+    // robots control
   }
 }
 
@@ -171,7 +175,7 @@ void printPosition(){
       coord_precision= 2; 
     }
     
-    Serial.print("X="); 
+    /*Serial.print("X="); 
     dtostrf(((float) hh_actual_X)/1000.0f, 4, coord_precision, buf);
     Serial.print(buf); 
     
@@ -181,6 +185,32 @@ void printPosition(){
     
     Serial.print("\tZ="); 
     dtostrf(((float) hh_actual_Z)/1000.0f, 4, coord_precision, buf);
-    Serial.println(buf); 
+    Serial.println(buf); */
+
+    Serial.print("Actual \tX=");
+    Serial.print(hh_actual_X); 
+    
+    Serial.print("\ttY="); 
+    Serial.print(hh_actual_Y);
+    
+    Serial.print("\ttZ="); 
+    Serial.println(hh_actual_Z); 
+    
+}
+void printTarget(){
+  byte coord_precision;
+    char buf[12];
+
+    if (high_resolution_mode){
+      coord_precision= 3;
+    }else{
+      coord_precision= 2; 
+    }
+    
+    Serial.print("Target \tX=");
+    Serial.print(hh_target_X); 
+    
+    Serial.print("\ttY="); 
+    Serial.println(hh_target_Y);
 }
 #endif

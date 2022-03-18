@@ -36,8 +36,10 @@
 #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
 #include <Zumo32U4.h> 
 #include <Zumo32U4Encoders.h>
+#elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
+#define DECOUPLING_CONTROLLER_DEBUG true
+#define VELOCITY_PID_DEBUG true
 #endif
-
 
 extern  byte measure_flag;
 // extern  float x_ref;                          /* '<Root>/x' == hh_target_X  */
@@ -56,17 +58,18 @@ extern  float Tf;
 extern  PIDController  pidg;
 extern  PIDController  pidd;
 #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
-extern  Zumo32U4Encoders  Encoder;
+extern  Zumo32U4Encoders  encoder;
 extern  Zumo32U4Motors  motors;
 #endif
 
 #define Kp 100  //Propotional constant260
 #define Ki 0 //Integral constant
 #define Kd 0 //Derivative constant
-#define R 0.03 // ray of wheel
+
+#define R 3 // ray of wheel
 #define Pi 3.141592653589
 
-#define D_t  42.0                     
+#define D_t  0.420                     
                                         /* Variable: D_t
                                         * Referenced by:
                                         *   '<S27>/Derivative Gain'
@@ -78,23 +81,23 @@ extern  Zumo32U4Motors  motors;
                                         *   '<S30>/Integral Gain'
                                         *   '<S74>/Integral Gain'
                                         */
-#define L  0.06                     
+#define L  6                     
                                         /* Variable: L
                                         * Referenced by: '<S1>/L//2'
                                         */
-#define N_t  20.0                     
+#define N_t  0.200                     
                                         /* Variable: N_t
                                         * Referenced by:
                                         *   '<S36>/Filter Coefficient'
                                         *   '<S80>/Filter Coefficient'
                                         */
-#define P_t  82.0                     
+#define P_t  0.820                     
                                         /* Variable: P_t
                                         * Referenced by:
                                         *   '<S38>/Proportional Gain'
                                         *   '<S82>/Proportional Gain'
                                         */
-#define Vm  400.0                         // Variable: Vm 
+#define Vm  42.0                         // Variable: Vm 
 
 typedef float real32_T;
 

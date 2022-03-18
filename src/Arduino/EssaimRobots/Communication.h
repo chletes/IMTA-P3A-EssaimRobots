@@ -2,7 +2,6 @@
 #define Communication_h
 
 #include "Arduino.h"
-#include "Globals.h"
 
 #define TOTAL_DEBUGGING false
 #define HH_REQUEST_PATH_CODE_DEBUGGING false

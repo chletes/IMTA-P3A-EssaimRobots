@@ -44,6 +44,7 @@ void loop_hedgehog(){
   bool packet_received = false;
   bool good_byte = false;
   byte hh_packet_size;
+  
   #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
     while(Serial1.available() > 0){ 
   #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
@@ -55,7 +56,7 @@ void loop_hedgehog(){
     }
     bytes_received_in_loop++;
     if (bytes_received_in_loop>100) break;// too much data without required header
-    
+      
     #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
       incoming_byte = Serial1.read();
     #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560s
@@ -179,16 +180,16 @@ void HH_process_stream_position_packet(){
     { // coordinates of hedgehog (X,Y), cm ==> mm
       un16.b[0] = hh_buffer[9];
       un16.b[1] = hh_buffer[10];
-      hh_actual_X = 10*long(un16.wi);
+      hh_actual_X = (float) 10*long(un16.wi)/1000;
 
       un16.b[0] = hh_buffer[11];
       un16.b[1] = hh_buffer[12];
-      hh_actual_Y = 10*long(un16.wi);
+      hh_actual_Y = (float) 10*long(un16.wi)/1000;
       
       // height of hedgehog, cm==>mm (FW V3.97+)
       un16.b[0] = hh_buffer[13];
       un16.b[1] = hh_buffer[14];
-      hh_actual_Z = 10*long(un16.wi);
+      hh_actual_Z = (float) 10*long(un16.wi)/1000;
 
       hh_flags = hh_buffer[15];
 
@@ -200,9 +201,10 @@ void HH_process_stream_position_packet(){
       hh_position_update_flag = true;// flag of new data from hedgehog received
       high_resolution_mode = false;
 
-      #if TOTAL_DEBUGGING
-      //Serial.println("3. Sending ACK ready");
+      #if TOTAL_DEBUGGING && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+      Serial.println("3. Sending ACK ready");
       #endif
+      
       if (hh_flags & 0x08) HH_send_ack_ready((byte) 0x01); // request for writing data
 
       break;
@@ -255,8 +257,8 @@ void HH_process_write_packet(){
   long param_movement_0, param_movement_1, param_movement_2;
   
   if (hh_packet_id == HH_REQUEST_PATH_CODE){ // Set Mouvement Path packet
-    #if TOTAL_DEBUGGING && defined(__AVR_ATmega2560__) // Arduino Mega 2560
-    Serial.println("6. Processing write packet");
+    #if TOTAL_DEBUGGING
+    //Serial.println("6. Processing write packet");
     #endif
 
     type_of_mouvement = hh_buffer[5];
@@ -265,11 +267,11 @@ void HH_process_write_packet(){
     parameter_0.b[0] = hh_buffer[8];
     parameter_0.b[1] = hh_buffer[9];
     param_movement_0 = 10*long(parameter_0.wi);
-    hh_target_X = param_movement_0/10;
+    hh_target_X = (float) param_movement_0/1000;
     parameter_1.b[0] = hh_buffer[10];
     parameter_1.b[1] = hh_buffer[11];
     param_movement_1 = 10*long(parameter_1.wi);
-    hh_target_Y = param_movement_1/10;
+    hh_target_Y = (float) param_movement_1/1000;
     parameter_2.b[0] = hh_buffer[12];
     parameter_2.b[1] = hh_buffer[13];
     param_movement_2 = 10*long(parameter_2.wi);
@@ -277,10 +279,10 @@ void HH_process_write_packet(){
     
     //bytes from 14:16 are reserved
     hh_commande_update_flag = true;
-    #if defined(__AVR_ATmega2560__) // Arduino Mega 2560
+    #if TOTAL_DEBUGGING || HH_REQUEST_PATH_CODE_DEBUGGING && defined(__AVR_ATmega2560__) // Arduino Mega 2560
     Serial.print("Packet 0x201 received (");
     Serial.print(">> Index of this elementary movement : ");
-    Serial.print(index);
+    Serial.println(index);
     Serial.print(">> Total number of elementary movements : ");
     Serial.print("/");
     Serial.print(total_mouvements);
@@ -345,11 +347,11 @@ void HH_process_write_packet(){
       case 5: break;
       case 6:{ 
         Serial.print(">> Target X: ");
-        Serial.print((int) param_movement_0/10);
+        Serial.print((float) param_movement_0/1000);
         Serial.print("\tTarget Y: ");
-        Serial.print((int) param_movement_1/10);
+        Serial.print((float) param_movement_1/1000);
         Serial.print("\tTarget Z: ");
-        Serial.println((int) param_movement_2/10);
+        Serial.println((float) param_movement_2/1000);
         break;
       }
       case 7:{ 
@@ -363,7 +365,8 @@ void HH_process_write_packet(){
     }
     #endif
     
-    HH_send_write_answer_success(); // send answer packet
+    // send answer packet
+    HH_send_write_answer_success();
   }
 }
 
