@@ -35,8 +35,8 @@ float Tf;
 
 PIDController pidg;
 PIDController pidd;
-PIDController pidx;
-PIDController pidy;
+PIDController pid1;
+PIDController pid2;
 Zumo32U4Encoders Encoder;
 Zumo32U4Motors  motors;
 
@@ -53,10 +53,10 @@ void update_theta_v(float Vd_t, float Vg_t, float dt){
   theta += (Vd_t - Vg_t)/L *dt;
 }
 void velocity_PID(){
-  pidg.setpoint(Vg);    // The "goal" the PID controller tries to "reach"
-  pidd.setpoint(Vd);    // The "goal" the PID controller tries to "reach"
+  pidg.setpoint(Vg*400/42);    // The "goal" the PID controller tries to "reach"
+  pidd.setpoint(Vd*400/42);    // The "goal" the PID controller tries to "reach"
   Tf=millis();
-  float Time = Ti-Tf;
+  float Time = (Tf-Ti)/1000;
   Vg_t=Encoder.getCountsAndResetLeft()*2*Pi*R/(100*12*Time)+0.01;
   Vd_t=Encoder.getCountsAndResetRight()*2*Pi*R/(100*12*Time)+0.01;
   Ti=millis();
@@ -65,21 +65,137 @@ void velocity_PID(){
   int output_d = pidd.compute(Vd_t);    // Let the PID compute the value, returns the optimal output
   motors.setLeftSpeed(output_g);
   motors.setRightSpeed(output_g);
-  delay(500);
 }
 /* System initialize for atomic system: '<Root>/Robot_controller' */
 void uncoupling_controller_init(DW_uncouping_controller_T *localDW){
   /* InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' */
-  localDW->DiscreteTimeIntegrator_DSTATE = 0.5;
+  localDW->DiscreteTimeIntegrator_DSTATE = 0.083;
+  pid1.begin();          // initialize the PID instance
+  pid1.tune(P_t, I_t, N_t*D_t);    // Tune the PID, arguments: kP, kI, kD 
+  pid1.limit(-255, 255);    // Limit the PID output between 0 and 255, this is important to get rid of integral windup!
+
+  pid2.begin();          // initialize the PID instance
+  pid2.tune(P_t, I_t,N_t*D_t);    // Tune the PID, arguments: kP, kI, kD  
+  pid2.limit(-255, 255);    // Limit the PID output between 0 and 255, this is important to get rid of integral windup!
+
 }
 
 /* Output and update for atomic system: '<Root>/Robot_controller' */
+//void uncoupling_controller(float *rtu_x_ref, float *rtu_y_ref, float
+//  *rtu_x_feedback, float *rtu_y_feedback, float rtu_theta, float *rtu_v_center, float Ts,
+//  float *rty_Vd, float *rty_Vg, DW_uncouping_controller_T *localDW)
+//{
+//  real32_T rtb_Product;
+//  real32_T rtb_Sum;
+//  real32_T rtb_FilterCoefficient;
+//  real32_T rtb_Sum1;
+//  real32_T rtb_FilterCoefficient_l;
+//  real32_T rtb_Sum_o;
+//  real32_T rtb_Sum_l;
+//  real32_T rtb_Product_tmp;
+//  real32_T rtb_Product_tmp_0;
+//
+//  /* Saturate: '<S1>/Saturation1' incorporates:
+//   *  DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
+//   */
+//  if (localDW->DiscreteTimeIntegrator_DSTATE > Vm) {
+//    *rtu_v_center = Vm;
+//  } else if (localDW->DiscreteTimeIntegrator_DSTATE < -Vm) {
+//    *rtu_v_center = -Vm;
+//  } else {
+//    *rtu_v_center = localDW->DiscreteTimeIntegrator_DSTATE;
+//  }
+//
+//  /* End of Saturate: '<S1>/Saturation1' */
+//
+//  /* Sum: '<S1>/Sum' */
+//  rtb_Sum = *rtu_x_ref - *rtu_x_feedback;
+//
+//  /* Gain: '<S36>/Filter Coefficient' incorporates:
+//   *  DiscreteIntegrator: '<S28>/Filter'
+//   *  Gain: '<S27>/Derivative Gain'
+//   *  Sum: '<S28>/SumD'
+//   */
+//  rtb_FilterCoefficient = (D_t * rtb_Sum - localDW->Filter_DSTATE) * N_t;
+//
+//  /* Sum: '<S42>/Sum' incorporates:
+//   *  DiscreteIntegrator: '<S33>/Integrator'
+//   *  Gain: '<S38>/Proportional Gain'
+//   */
+//  rtb_Sum_o = (P_t * rtb_Sum + localDW->Integrator_DSTATE) +
+//    rtb_FilterCoefficient;
+//
+//  /* Sum: '<S1>/Sum1' */
+//  rtb_Sum1 = *rtu_y_ref - *rtu_y_feedback;
+//
+//  /* Gain: '<S80>/Filter Coefficient' incorporates:
+//   *  DiscreteIntegrator: '<S72>/Filter'
+//   *  Gain: '<S71>/Derivative Gain'
+//   *  Sum: '<S72>/SumD'
+//   */
+//  rtb_FilterCoefficient_l = (D_t * rtb_Sum1 - localDW->Filter_DSTATE_c) * N_t;
+//
+//  /* Sum: '<S86>/Sum' incorporates:
+//   *  DiscreteIntegrator: '<S77>/Integrator'
+//   *  Gain: '<S82>/Proportional Gain'
+//   */
+//  rtb_Sum_l = (P_t * rtb_Sum1 + localDW->Integrator_DSTATE_g) +
+//    rtb_FilterCoefficient_l;
+//
+//  /* Fcn: '<S1>/linearisation calcul u2' incorporates:
+//   *  Fcn: '<S1>/linearisation calcul u1'
+//   */
+//  rtb_Product_tmp = cos(rtu_theta);
+//  rtb_Product_tmp_0 = sin(rtu_theta);
+//
+//  /* Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' incorporates:
+//   *  Fcn: '<S1>/linearisation calcul u1'
+//   */
+//  localDW->DiscreteTimeIntegrator_DSTATE += (rtb_Product_tmp * rtb_Sum_o +
+//    rtb_Product_tmp_0 * rtb_Sum_l) * Ts;//Velocity
+//  *rtu_v_center+=(rtb_Product_tmp * rtb_Sum_o + rtb_Product_tmp_0 * rtb_Sum_l) * Ts;
+//
+//  /* Product: '<S1>/Product' incorporates:
+//   *  Constant: '<S1>/L//2'
+//   *  Fcn: '<S1>/linearisation calcul u2'
+//   */
+//  rtb_Product = (-rtb_Product_tmp_0 / *rtu_v_center * rtb_Sum_o + rtb_Product_tmp
+//                 / *rtu_v_center * rtb_Sum_l) * (L / 2.0);//theta_p *L/2
+//
+//
+//  /* Sum: '<S1>/Sum2' */
+//  *rty_Vd = *rtu_v_center+ rtb_Product;
+//
+//  /* Sum: '<S1>/Sum3' */
+//  *rty_Vg = *rtu_v_center- rtb_Product;
+//  /* Update for DiscreteIntegrator: '<S33>/Integrator' incorporates:
+//   *  Gain: '<S30>/Integral Gain'
+//   */
+//  localDW->Integrator_DSTATE += I_t * rtb_Sum * Ts;
+//
+//  /* Update for DiscreteIntegrator: '<S28>/Filter' */
+//  localDW->Filter_DSTATE += Ts * rtb_FilterCoefficient;
+//
+//  /* Update for DiscreteIntegrator: '<S77>/Integrator' incorporates:
+//   *  Gain: '<S74>/Integral Gain'
+//   */
+//  localDW->Integrator_DSTATE_g += I_t * rtb_Sum1 * Ts;
+//
+//  /* Update for DiscreteIntegrator: '<S72>/Filter' */
+//  localDW->Filter_DSTATE_c += Ts * rtb_FilterCoefficient_l;
+//}
+
+
+
+
 void uncoupling_controller(float *rtu_x_ref, float *rtu_y_ref, float
   *rtu_x_feedback, float *rtu_y_feedback, float rtu_theta, float *rtu_v_center, float Ts,
-  float *rty_Vd, float *rty_Vg, DW_uncouping_controller_T *localDW)
-{
+  float *rty_Vd, float *rty_Vg, DW_uncouping_controller_T *localDW){
+  //Intern parameters:
+  
   real32_T rtb_Product;
   real32_T rtb_Sum;
+  real32_T error_x;
   real32_T rtb_FilterCoefficient;
   real32_T rtb_Sum1;
   real32_T rtb_FilterCoefficient_l;
@@ -87,53 +203,34 @@ void uncoupling_controller(float *rtu_x_ref, float *rtu_y_ref, float
   real32_T rtb_Sum_l;
   real32_T rtb_Product_tmp;
   real32_T rtb_Product_tmp_0;
+  
+  //Pid for x_ref and x_feedback:
+  pid1.setpoint(*rtu_x_ref);    // The "goal" the PID controller tries to "reach"
+  float output_1 = pid1.compute(*rtu_x_feedback);
+  //Pid for y_ref and y_feedback:
+  pid2.setpoint (*rtu_y_ref);// The "goal" the PID controller tries to "reach"
+  float output_2 = pid2.compute(*rtu_y_feedback);
 
+  if((*rtu_y_feedback- *rtu_y_ref)<0.01 && (*rtu_x_feedback- *rtu_x_ref)<0.01){
+    *rty_Vd =0;
+    *rty_Vg =0;
+    }
   /* Saturate: '<S1>/Saturation1' incorporates:
    *  DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
    */
-  if (localDW->DiscreteTimeIntegrator_DSTATE > Vm) {
-    *rtu_v_center = Vm;
-  } else if (localDW->DiscreteTimeIntegrator_DSTATE < -Vm) {
-    *rtu_v_center = -Vm;
-  } else {
-    *rtu_v_center = localDW->DiscreteTimeIntegrator_DSTATE;
+  if (*rty_Vd> Vm) {
+    *rty_Vd = Vm;
+  } else if (*rty_Vd < -Vm) {
+    *rty_Vd = -Vm;
+  }
+  if (*rty_Vg> Vm) {
+    *rty_Vg = Vm;
+  } else if (*rty_Vg < -Vm) {
+    *rty_Vg = -Vm;
   }
 
   /* End of Saturate: '<S1>/Saturation1' */
 
-  /* Sum: '<S1>/Sum' */
-  rtb_Sum = *rtu_x_ref - *rtu_x_feedback;
-
-  /* Gain: '<S36>/Filter Coefficient' incorporates:
-   *  DiscreteIntegrator: '<S28>/Filter'
-   *  Gain: '<S27>/Derivative Gain'
-   *  Sum: '<S28>/SumD'
-   */
-  rtb_FilterCoefficient = (D_t * rtb_Sum - localDW->Filter_DSTATE) * N_t;
-
-  /* Sum: '<S42>/Sum' incorporates:
-   *  DiscreteIntegrator: '<S33>/Integrator'
-   *  Gain: '<S38>/Proportional Gain'
-   */
-  rtb_Sum_o = (P_t * rtb_Sum + localDW->Integrator_DSTATE) +
-    rtb_FilterCoefficient;
-
-  /* Sum: '<S1>/Sum1' */
-  rtb_Sum1 = *rtu_y_ref - *rtu_y_feedback;
-
-  /* Gain: '<S80>/Filter Coefficient' incorporates:
-   *  DiscreteIntegrator: '<S72>/Filter'
-   *  Gain: '<S71>/Derivative Gain'
-   *  Sum: '<S72>/SumD'
-   */
-  rtb_FilterCoefficient_l = (D_t * rtb_Sum1 - localDW->Filter_DSTATE_c) * N_t;
-
-  /* Sum: '<S86>/Sum' incorporates:
-   *  DiscreteIntegrator: '<S77>/Integrator'
-   *  Gain: '<S82>/Proportional Gain'
-   */
-  rtb_Sum_l = (P_t * rtb_Sum1 + localDW->Integrator_DSTATE_g) +
-    rtb_FilterCoefficient_l;
 
   /* Fcn: '<S1>/linearisation calcul u2' incorporates:
    *  Fcn: '<S1>/linearisation calcul u1'
@@ -144,16 +241,17 @@ void uncoupling_controller(float *rtu_x_ref, float *rtu_y_ref, float
   /* Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' incorporates:
    *  Fcn: '<S1>/linearisation calcul u1'
    */
-  localDW->DiscreteTimeIntegrator_DSTATE += (rtb_Product_tmp * rtb_Sum_o +
-    rtb_Product_tmp_0 * rtb_Sum_l) * Ts;//Velocity
-  *rtu_v_center+=(rtb_Product_tmp * rtb_Sum_o + rtb_Product_tmp_0 * rtb_Sum_l) * Ts;
+  localDW->DiscreteTimeIntegrator_DSTATE += (rtb_Product_tmp * output_1 +
+    rtb_Product_tmp_0 * output_2) * Ts;//Velocity
+    
+  *rtu_v_center+=(rtb_Product_tmp * output_1 + rtb_Product_tmp_0 * output_2) * Ts;
 
   /* Product: '<S1>/Product' incorporates:
    *  Constant: '<S1>/L//2'
    *  Fcn: '<S1>/linearisation calcul u2'
    */
-  rtb_Product = (-rtb_Product_tmp_0 / *rtu_v_center * rtb_Sum_o + rtb_Product_tmp
-                 / *rtu_v_center * rtb_Sum_l) * (L / 2.0);//theta_p *L/2
+  rtb_Product = (-rtb_Product_tmp_0 / *rtu_v_center * output_1 + rtb_Product_tmp
+                 / *rtu_v_center * output_2) * (L / 2.0);//theta_p *L/2
 
 
   /* Sum: '<S1>/Sum2' */
@@ -161,37 +259,6 @@ void uncoupling_controller(float *rtu_x_ref, float *rtu_y_ref, float
 
   /* Sum: '<S1>/Sum3' */
   *rty_Vg = *rtu_v_center- rtb_Product;
-  /* Update for DiscreteIntegrator: '<S33>/Integrator' incorporates:
-   *  Gain: '<S30>/Integral Gain'
-   */
-  localDW->Integrator_DSTATE += I_t * rtb_Sum * Ts;
 
-  /* Update for DiscreteIntegrator: '<S28>/Filter' */
-  localDW->Filter_DSTATE += Ts * rtb_FilterCoefficient;
-
-  /* Update for DiscreteIntegrator: '<S77>/Integrator' incorporates:
-   *  Gain: '<S74>/Integral Gain'
-   */
-  localDW->Integrator_DSTATE_g += I_t * rtb_Sum1 * Ts;
-
-  /* Update for DiscreteIntegrator: '<S72>/Filter' */
-  localDW->Filter_DSTATE_c += Ts * rtb_FilterCoefficient_l;
-}
-//void uncoupling_controller2(real32_T x_ref, real32_T y_ref, real32_T x_feedback, real32_T y_feedback, real32_T theta, real32_T Ts, real32_T *Vd, real32_T *Vg){
-//  //Intern parameters:
-//  real32_T error_x;
-//  real32_T rtb_FilterCoefficient;
-//  real32_T rtb_Sum1;
-//  real32_T rtb_FilterCoefficient_l;
-//  real32_T rtb_Sum_o;
-//  real32_T rtb_Sum_l;
-//  real32_T rtb_Product_tmp;
-//  real32_T rtb_Product_tmp_0;
-//  
-//  //Pid for x_ref and x_feedback:
-//  error_x = x_ref - x_feedback;
-//  pidg.setpoint(Vg);    // The "goal" the PID controller tries to "reach"
-//  //Pid for y_ref and y_feedback:
-//  error_y = y_ref - y_feedback; 
-//  pidd.setpoint(Vd);    // The "goal" the PID controller tries to "reach"
-//    }
+  
+    }

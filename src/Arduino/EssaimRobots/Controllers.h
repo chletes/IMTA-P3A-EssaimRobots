@@ -50,16 +50,19 @@ extern  float Tf;
 
 extern  PIDController  pidg;
 extern  PIDController  pidd;
+extern  PIDController  pid1;
+extern  PIDController  pid2;
 extern  Zumo32U4Encoders  Encoder;
 extern  Zumo32U4Motors  motors;
 
-#define Kp 100  //Propotional constant260
+#define Kp 90//Propotional constant260
 #define Ki 0 //Integral constant
 #define Kd 0 //Derivative constant
-#define R 0.03 // ray of wheel
+
+#define R 2 // ray of wheel
 #define Pi 3.141592653589
 
-#define D_t  42.0                     
+#define D_t  42.0                     /*42.0*/
                                         /* Variable: D_t
                                         * Referenced by:
                                         *   '<S27>/Derivative Gain'
@@ -71,23 +74,23 @@ extern  Zumo32U4Motors  motors;
                                         *   '<S30>/Integral Gain'
                                         *   '<S74>/Integral Gain'
                                         */
-#define L  0.06                     
+#define L  8.5                    
                                         /* Variable: L
                                         * Referenced by: '<S1>/L//2'
                                         */
-#define N_t  20.0                     
-                                        /* Variable: N_t
+#define N_t  1.0                     
+                                        /* Variable: N_t20.0
                                         * Referenced by:
                                         *   '<S36>/Filter Coefficient'
                                         *   '<S80>/Filter Coefficient'
                                         */
 #define P_t  82.0                     
-                                        /* Variable: P_t
+                                        /* Variable: P_t 82.0
                                         * Referenced by:
                                         *   '<S38>/Proportional Gain'
                                         *   '<S82>/Proportional Gain'
                                         */
-#define Vm  400.0                         // Variable: Vm 
+#define Vm  42.0                         // Variable: Vm 
 
 typedef float real32_T;
 

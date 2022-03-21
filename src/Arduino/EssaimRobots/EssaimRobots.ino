@@ -64,7 +64,7 @@ void loop(){
   ledYellow(1);
     if(uncoupling_ready)
     {
-      uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.5, &Vd, &Vg, &uncoupling_controller_T);
+      uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.083, &Vd, &Vg, &uncoupling_controller_T);
       velocity_PID();
 //      if(hh_target_X==hh_actual_X+0.5 && hh_target_Y== hh_actual_Y+0.5){
 //        uncoupling_ready=false;
