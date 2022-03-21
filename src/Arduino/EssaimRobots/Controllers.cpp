@@ -35,10 +35,19 @@ float Tf;
 
 PIDController pidg;
 PIDController pidd;
+<<<<<<< HEAD
 PIDController pid1;
 PIDController pid2;
 Zumo32U4Encoders Encoder;
 Zumo32U4Motors  motors;
+=======
+PIDController pidx;
+PIDController pidy;
+#if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+extern  Zumo32U4Encoders  encoder;
+extern  Zumo32U4Motors  motors;
+#endif
+>>>>>>> ff38124c03e536255dd040633dc00415175c643f
 
 void setup_Velocity_PID(){
   pidg.begin();          // initialize the PID instance
@@ -51,25 +60,55 @@ void setup_Velocity_PID(){
 }
 void update_theta_v(float Vd_t, float Vg_t, float dt){
   theta += (Vd_t - Vg_t)/L *dt;
+  #if VELOCITY_PID_DEBUG && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+  Serial.print("Velocity Controller \t -> dt: \t");
+  Serial.println(dt);
+  Serial.print("Velocity Controller \t -> theta: \t");
+  Serial.println(theta);
+  #endif
 }
 void velocity_PID(){
   pidg.setpoint(Vg*400/42);    // The "goal" the PID controller tries to "reach"
   pidd.setpoint(Vd*400/42);    // The "goal" the PID controller tries to "reach"
   Tf=millis();
   float Time = (Tf-Ti)/1000;
+<<<<<<< HEAD
   Vg_t=Encoder.getCountsAndResetLeft()*2*Pi*R/(100*12*Time)+0.01;
   Vd_t=Encoder.getCountsAndResetRight()*2*Pi*R/(100*12*Time)+0.01;
+=======
+  #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+    Vg_t=encoder.getCountsAndResetLeft()*2*Pi*R/(100*12*Time)+0.01;
+    Vd_t=encoder.getCountsAndResetRight()*2*Pi*R/(100*12*Time)+0.01;
+  #elif defined(__AVR_ATmega2560__) // Arduino Mega 2560
+    Vg_t = 1;
+    Vd_t = 3;
+  #endif
+>>>>>>> ff38124c03e536255dd040633dc00415175c643f
   Ti=millis();
   update_theta_v(Vd_t, Vg_t, Time);
   int output_g = pidg.compute(Vg_t);    // Let the PID compute the value, returns the optimal output
   int output_d = pidd.compute(Vd_t);    // Let the PID compute the value, returns the optimal output
+<<<<<<< HEAD
   motors.setLeftSpeed(output_g);
   motors.setRightSpeed(output_g);
+=======
+  #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
+  motors.setLeftSpeed(output_g);  
+  motors.setRightSpeed(output_d);
+  #elif VELOCITY_PID_DEBUG && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+  Serial.print("Velocity Controller \t -> output_g: \t");
+  Serial.print(output_g);
+  Serial.print("\t output_d: ");
+  Serial.println(output_d);
+  #endif
+  //delay(500);
+>>>>>>> ff38124c03e536255dd040633dc00415175c643f
 }
 /* System initialize for atomic system: '<Root>/Robot_controller' */
 void uncoupling_controller_init(DW_uncouping_controller_T *localDW){
   /* InitializeConditions for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' */
   localDW->DiscreteTimeIntegrator_DSTATE = 0.083;
+<<<<<<< HEAD
   pid1.begin();          // initialize the PID instance
   pid1.tune(P_t, I_t, N_t*D_t);    // Tune the PID, arguments: kP, kI, kD 
   pid1.limit(-255, 255);    // Limit the PID output between 0 and 255, this is important to get rid of integral windup!
@@ -78,6 +117,8 @@ void uncoupling_controller_init(DW_uncouping_controller_T *localDW){
   pid2.tune(P_t, I_t,N_t*D_t);    // Tune the PID, arguments: kP, kI, kD  
   pid2.limit(-255, 255);    // Limit the PID output between 0 and 255, this is important to get rid of integral windup!
 
+=======
+>>>>>>> ff38124c03e536255dd040633dc00415175c643f
 }
 
 /* Output and update for atomic system: '<Root>/Robot_controller' */
@@ -218,6 +259,7 @@ void uncoupling_controller(float *rtu_x_ref, float *rtu_y_ref, float
   /* Saturate: '<S1>/Saturation1' incorporates:
    *  DiscreteIntegrator: '<S1>/Discrete-Time Integrator'
    */
+<<<<<<< HEAD
   if (*rty_Vd> Vm) {
     *rty_Vd = Vm;
   } else if (*rty_Vd < -Vm) {
@@ -227,7 +269,18 @@ void uncoupling_controller(float *rtu_x_ref, float *rtu_y_ref, float
     *rty_Vg = Vm;
   } else if (*rty_Vg < -Vm) {
     *rty_Vg = -Vm;
+=======
+  if (*rtu_v_center > Vm) {
+    *rtu_v_center = Vm;
+  } else if (*rtu_v_center < -Vm) {
+    *rtu_v_center = -Vm;
+>>>>>>> ff38124c03e536255dd040633dc00415175c643f
   }
+
+  #if DECOUPLING_CONTROLLER_DEBUG && defined(__AVR_ATmega2560__) // Arduino Mega 2560
+  Serial.print("Decoupling Controller \t -> v_center: \t");
+  Serial.println(*rtu_v_center);
+  #endif
 
   /* End of Saturate: '<S1>/Saturation1' */
 
@@ -241,11 +294,18 @@ void uncoupling_controller(float *rtu_x_ref, float *rtu_y_ref, float
   /* Update for DiscreteIntegrator: '<S1>/Discrete-Time Integrator' incorporates:
    *  Fcn: '<S1>/linearisation calcul u1'
    */
+<<<<<<< HEAD
   localDW->DiscreteTimeIntegrator_DSTATE += (rtb_Product_tmp * output_1 +
     rtb_Product_tmp_0 * output_2) * Ts;//Velocity
     
   *rtu_v_center+=(rtb_Product_tmp * output_1 + rtb_Product_tmp_0 * output_2) * Ts;
 
+=======
+  localDW->DiscreteTimeIntegrator_DSTATE += (rtb_Product_tmp * rtb_Sum_o +
+    rtb_Product_tmp_0 * rtb_Sum_l) * Ts;//Velocity
+  *rtu_v_center+=(rtb_Product_tmp * rtb_Sum_o + rtb_Product_tmp_0 * rtb_Sum_l) * Ts;
+  
+>>>>>>> ff38124c03e536255dd040633dc00415175c643f
   /* Product: '<S1>/Product' incorporates:
    *  Constant: '<S1>/L//2'
    *  Fcn: '<S1>/linearisation calcul u2'

@@ -6,7 +6,11 @@ This API is sourced from the original Marvelmind's API example (which can be fou
 
 For our API, the DLL and `.so` files for a Windows 64-bit and a Linux 64-bit machine respectively are already copied in this folder. 
 
-To build the API just execute `make` in a terminal. 
+To build the API run `sudo apt install build-essential` and then just execute `make mm_api` in a terminal. 
+
+## Launch the API 
+
+Open a terminal in this directory and execute `./mm_api`. 
 
 ## Using the API
 

@@ -1,8 +1,9 @@
 # Modem API 
 
-The `original` folder has the original API version from Marvelmind (which can be founddownloading the software pack (SW) from Marvelmind's web site and then going to this path: `marvelmind_SW/marvelmind_SW_2021_09_29/Examples/c/2017_01_28_modem_C_example`).
+:warning: This API was considered deprecated by Marvelmind and we used the other API.
 
-The `ours` folder has our implementation of the modem API. 
+
+The `original` folder has the original API version from Marvelmind (which can be founddownloading the software pack (SW) from Marvelmind's web site and then going to this path: `marvelmind_SW/marvelmind_SW_2021_09_29/Examples/c/2017_01_28_modem_C_example`).
 
 ## How the API works
 
