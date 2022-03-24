@@ -19,7 +19,7 @@ The current version of the API works the same way the original does. The only di
 ```
 Raw distance: 72 ==> 22  : 2,652 
 Raw distance: 72 ==> 25  : 3,425 
- Enter command: command 72 6 1 1 1
+ Enter command: cmd 72 6 1 1 1
 Command sent
 Raw distance: 72 ==> 22  : 2,654
 ```

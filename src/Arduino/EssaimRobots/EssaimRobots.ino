@@ -1,7 +1,7 @@
 /*  Projet 3A : Pilotage essaim robots
  *  Encadrant : Fabien Claveau
  *  Élèves    : Carlos SANTOS SEISDEDOS, Fatima-Zahra LAFTISSI, Wentao GONG
- *  Date      : 28/02/22
+ *  Date      : 24/03/22
  */
 
 /* Les connections pour le robot Pololu Zumo 32U4:
@@ -24,7 +24,6 @@
   * UART Hedgehog sampling frequency  : 115200  Hz
   */
 
-#include "Globals.h"
 #include "Communication.h"
 #include "Controllers.h"
 
@@ -64,18 +63,6 @@ void loop(){
   if (hh_position_update_flag){       // new data from hedgehog available
     hh_position_update_flag = false;  // clear new data flag 
     // Variables hh_actual_X, hh_actual_Y disponibles.
-    
-<<<<<<< HEAD
-    //printPosition();
-    //playBuzzer();
-    //lightLEDS();
-    // appels a PID
-    //calculate commandes for robot
-    //update_theta_v(Vd_t, Vg_t, delta_t_position_update); //update theta and v_centre
-  ledYellow(1);
-    if(uncoupling_ready)
-    {
-=======
     #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
       ledYellow(1);
       //playBuzzer();
@@ -88,7 +75,6 @@ void loop(){
       #if defined(__AVR_ATmega2560__) // Arduino Mega 2560
       printTarget();
       #endif
->>>>>>> ff38124c03e536255dd040633dc00415175c643f
       uncoupling_controller(&hh_target_X, &hh_target_Y, &hh_actual_X, &hh_actual_Y, theta, &v_center, 0.083, &Vd, &Vg, &uncoupling_controller_T);
       velocity_PID();
       

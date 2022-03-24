@@ -180,19 +180,11 @@ void HH_process_stream_position_packet(){
     { // coordinates of hedgehog (X,Y), cm ==> mm
       un16.b[0] = hh_buffer[9];
       un16.b[1] = hh_buffer[10];
-<<<<<<< HEAD
-      hh_actual_X =float( 10*long(un16.wi))/1000;
-
-      un16.b[0] = hh_buffer[11];
-      un16.b[1] = hh_buffer[12];
-      hh_actual_Y = float(10*long(un16.wi))/1000;
-=======
       hh_actual_X = (float) 10*long(un16.wi)/1000;
 
       un16.b[0] = hh_buffer[11];
       un16.b[1] = hh_buffer[12];
       hh_actual_Y = (float) 10*long(un16.wi)/1000;
->>>>>>> ff38124c03e536255dd040633dc00415175c643f
       
       // height of hedgehog, cm==>mm (FW V3.97+)
       un16.b[0] = hh_buffer[13];
@@ -275,19 +267,11 @@ void HH_process_write_packet(){
     parameter_0.b[0] = hh_buffer[8];
     parameter_0.b[1] = hh_buffer[9];
     param_movement_0 = 10*long(parameter_0.wi);
-<<<<<<< HEAD
-    hh_target_X =(float) param_movement_0/1000;
-    parameter_1.b[0] = hh_buffer[10];
-    parameter_1.b[1] = hh_buffer[11];
-    param_movement_1 = 10*long(parameter_1.wi);
-    hh_target_Y = (float)param_movement_1/1000;
-=======
     hh_target_X = (float) param_movement_0/1000;
     parameter_1.b[0] = hh_buffer[10];
     parameter_1.b[1] = hh_buffer[11];
     param_movement_1 = 10*long(parameter_1.wi);
     hh_target_Y = (float) param_movement_1/1000;
->>>>>>> ff38124c03e536255dd040633dc00415175c643f
     parameter_2.b[0] = hh_buffer[12];
     parameter_2.b[1] = hh_buffer[13];
     param_movement_2 = 10*long(parameter_2.wi);

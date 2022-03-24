@@ -28,7 +28,6 @@
 #ifndef Controllers_h
 #define Controllers_h
 #include "Arduino.h"
-#include "Globals.h"
 #include <Wire.h>
 #include <PIDController.h>
 #include <math.h>                               /* uncoupling_COMMON_INCLUDES_ */
@@ -57,14 +56,10 @@ extern  float Tf;
 
 extern  PIDController  pidg;
 extern  PIDController  pidd;
-<<<<<<< HEAD
 extern  PIDController  pid1;
 extern  PIDController  pid2;
-extern  Zumo32U4Encoders  Encoder;
-=======
 #if defined (__AVR_ATmega32U4__) // Pololu Zumo 32U4
 extern  Zumo32U4Encoders  encoder;
->>>>>>> ff38124c03e536255dd040633dc00415175c643f
 extern  Zumo32U4Motors  motors;
 #endif
 
@@ -72,17 +67,11 @@ extern  Zumo32U4Motors  motors;
 #define Ki 0 //Integral constant
 #define Kd 0 //Derivative constant
 
-<<<<<<< HEAD
+
 #define R 2 // ray of wheel
 #define Pi 3.141592653589
 
 #define D_t  42.0                     /*42.0*/
-=======
-#define R 3 // ray of wheel
-#define Pi 3.141592653589
-
-#define D_t  0.420                     
->>>>>>> ff38124c03e536255dd040633dc00415175c643f
                                         /* Variable: D_t
                                         * Referenced by:
                                         *   '<S27>/Derivative Gain'
@@ -94,32 +83,18 @@ extern  Zumo32U4Motors  motors;
                                         *   '<S30>/Integral Gain'
                                         *   '<S74>/Integral Gain'
                                         */
-<<<<<<< HEAD
 #define L  8.5                    
                                         /* Variable: L
                                         * Referenced by: '<S1>/L//2'
                                         */
 #define N_t  1.0                     
                                         /* Variable: N_t20.0
-=======
-#define L  6                     
-                                        /* Variable: L
-                                        * Referenced by: '<S1>/L//2'
-                                        */
-#define N_t  0.200                     
-                                        /* Variable: N_t
->>>>>>> ff38124c03e536255dd040633dc00415175c643f
                                         * Referenced by:
                                         *   '<S36>/Filter Coefficient'
                                         *   '<S80>/Filter Coefficient'
                                         */
-<<<<<<< HEAD
 #define P_t  82.0                     
-                                        /* Variable: P_t 82.0
-=======
-#define P_t  0.820                     
-                                        /* Variable: P_t
->>>>>>> ff38124c03e536255dd040633dc00415175c643f
+                                       /* Variable: P_t 82.0
                                         * Referenced by:
                                         *   '<S38>/Proportional Gain'
                                         *   '<S82>/Proportional Gain'
