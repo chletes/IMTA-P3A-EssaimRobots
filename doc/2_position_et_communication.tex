@@ -1,0 +1,28 @@
+\section{Position des robots et système de communication - Système de localisation Marvelmind}
+
+Le système de localisation absolu est de la marque Marvelmind \cite{marvelmind-url}. A l’aide de balises fixes et mobiles (embarquées sur les robots à localiser, et nommées \og Hedgehogs \fg{}) et d'un modem branché à l'ordinateur, le système permet d’avoir une mesure absolue relativement précise ($\pm$ 2 cm) de la position et de l’orientation des balises (en soi, des robots). 
+
+Marvelmind met à disposition un \og Software Pack \fg{}, qui inclut un logiciel, nommé \textit{Dashboard}, pour configurer les balises et mettre à point le système, et des APIs. Nous utilisons l'\og API Modem \fg{} parce que les autres sont considérés obsolètes par Marvelmind. Avec n'importe lequel, nous retrouvons la position des différents Hedgehog dans l'ordinateur. 
+
+\subsection{Première idée.}
+Au début du projet, notre intention était d'utiliser ce système de localisation pour développer une chaîne de communication complète, permettant d'envoyer des commandes aux robots depuis un ordinateur et de remonter des données à l'ordinateur, comme vous pouvez voir dans la Figure \ref{diagram:communication}. Au début nous avions considéré deux modules au sein de l'ordinateur: un \og Système Centrale \fg{}, capable d'exécuter une solution à notre loi de commande découplante, et une \og API \fg{}, capable de communiquer avec le Modem (qui lui est branché à l'ordinateur par USB). Le reste du système Marvelmind était chargé d'envoyer les commandes à chaque robot, ainsi que les réponses du robot.
+
+\begin{figure}[h!]
+    \centering
+    \input{doc/diagrams/communication/communication}
+    \caption{Chaîne de communication, idée au début du projet.}
+    \label{diagram:communication}
+\end{figure}
+
+Cependant, nous avons abandonné cette idée du fait que le système Marvelmind ne permet pas de remonter des données (depuis le robot vers le Système Centrale). 
+
+\subsection{Idée finale}
+Suite à cela, nous avons modifié la loi de commande pour embarquer un contrôleur dans chaque robot afin de suivre sa propre trajectoire (Figure \ref{fig:robot} et Figure \ref{fig:robot_pid}) et développer une loi découplante qui reçoit uniquement la position des balises (assuré par le système Marvelmind de base) dans l'ordinateur (Figure \ref{fig:formulation_commande}). 
+
+Une explication plus précise de l'API et de son utilisation, ainsi que les trames utilisés par Marvelmind, est disponible dans le dépôt GitHub sous forme de Readme visuels. 
+\subsection{Problèmes rencontrés}
+\begin{itemize}
+    \item La configuration du système est très complexe, indépendemment des vidéos tutoriels de la chaîne Youtube de Marvelmind \cite{marvelmind-youtube}. 
+    \item Nous avons rencontré des problèmes de localisation lorsqu'on utilisait 3 balises fixes uniquement, nous recommandons au moins 4 balises fixes. Même si le set de balises comprend uniquement 5 balises au total (4 balises fixes et 1 balise mobile), vous pouvez mélanger des balises de différents sets. 
+    \item Le système Marvelmind ne permet pas de remonter des données (depuis le robot vers le Système Centrale).
+\end{itemize}
