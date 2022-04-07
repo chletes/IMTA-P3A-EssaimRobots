@@ -1,15 +1,36 @@
 \section{Formulation de la loi de commande}
+Une des étapes primordiales dans notre projet est la formulation du problème de commande. Dans ce qui suit, nous allons voir en plus de détails la loi de commande que nous proposons pour résoudre notre problème de commande de l'essaim de robot, ainsi que les choix qui ont été fait.
 
-\begin{flushright}
-24 Février 2022
-\end{flushright}
+\subsection{Introduction à la loi de commande}
+
+Le robot Pololu Zumo 32U4 est une petite plate-forme robotique à chenilles de moins de 10 cm de côté et fonctionne avec une variété de micro-moteurs à engrenages métalliques pour permettre une combinaison personnalisable de couple et de vitesse. \cite{pololu-url}. Il est pourvu d’une librairie d’utilisation facile à prendre en main, car compatible avec l’environnement Arduino.
+
+\begin{itemize}
+    \item Pour la suite, nous considérons notre système un essaim de deux robots.
+\end{itemize}
+
+Pour dériver la loi de commande de notre système, nous avons étudié le modèle cinématique d'un robot \og  \textit{differential-drive} \fg{}, recueilli dans \cite{scaramuza}, puis nous avons déterminé un modèle pour l'ensemble du mouvement de notre système.
+
+\subsection{Loi de commande}
+
+Tout d'abord, nous essayons de comprendre les données qui vont circuler dans notre système afin de définir et formuler la loi de commande, déterminer les paramètres dont on aura accès et qu'on peut fournir en retour d'état au système. Comme nous avons indiqué précédemment au Chapitre \ref{sec:marvelmind}, nous avons du modifier notre loi de commande pour ternir en compte la limitation du système de localisation Marvelmind.
 
 \begin{figure}[h!]
     \centering
     \input{doc/diagrams/2_formulation_commande/formulation_commande}
     \caption{Schéma bloc du système. En bleu les robots Pololu (Arduino), et en noir le Système Centrale (PC).}
     \label{fig:formulation_commande}
-\end{figure}
+\end{figure} \clearpage
+
+La première information que nous avons à l'entrée du système est la consigne qui est sous la forme d'une suite de positions $(x^c_G,y^c_G)$ déterminant la trajectoire du barycentre de l'essaim de deux robots, et des projections en axe $X$ et $Y$ de l'interdistance demandée entre les robots, notés: $(d^c_x,d^c_y)$ .
+
+Ensuite, un régulateur LQ permet de réguler notre système tout en assurant un retour d'état optimisé. Il sera inclus dans notre système centrale, et sera le responsable d'envoyer les commandes spécifiques à chaque robot: une position de consigne $(x^c_i,y^c_i)$ qu'ils doivent atteindre. 
+
+Chaque robot lié à une balise Marvelmind Hedgehog retourne au régulateur LQ la position actuelle de nos deux robots afin de fermer la boucle et assurer le suivi des consignes et l'élimination des perturbations/bruits.
+
+
+
+Ensuite, pour assurer un bon suivi de consignes, chaque robot possède deux régulateurs PIDs, représenté dans la Figure \ref{fig:robot}. En plus de ça, ils possède deux PIDs supplémentaire pour l'asservissement de la vitesse de chaque roue, représenté dans la Figure \ref{fig:robot_pid}. 
 
 \begin{figure}[h!]
     \centering
@@ -24,3 +45,5 @@
     \caption{Boucle fermé du robot}
     \label{fig:robot_pid}
 \end{figure}
+
+\clearpage

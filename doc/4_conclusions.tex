@@ -1,0 +1,13 @@
+\section{Conclusions}
+
+Dû aux forts blocages que nous avons subit par le système de localisation Marvelmind, nous n'avons pas eu le temps d'implémenter une bonne loi de commande sur les robots, malgré les efforts à la fin du semestre. En plus, les robots Pololu sont assez simples et ne disposent pas d'option simple pour faire du débogage. Dû a ces contraintes, à la fin du projet, nous avions un robot qui obtenait une position de consigne à travers le système Marvelmind et atteignait la position ciblée. Voici une liste d'idées pour poursuivre le projet. 
+
+\begin{itemize}
+    \item Si le projet tient en compte toujours ces robots là, mettre en place un système de \og \texit{data-logging} \fg{} sur chaque robot. 
+\begin{itemize}
+    \item Faire attention à la librarie d'Arduino \textit{EEPROM.h}, nous avons trouvé qu'elle est capable de bloquer le robot complètement. 
+\end{itemize}
+    \item Vérifier le régulateur de vitesse embarqué sur les robots.
+    \item Vérifier le système Marvelmind (ou essayer un autre système GPS). 
+    \item Vérifier le système de génération de trajectoire inclus dans notre système centrale. 
+\end{itemize}

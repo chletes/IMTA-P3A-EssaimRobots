@@ -1,4 +1,4 @@
-\section{Modèle cinématique}
+\subsection{Modèle cinématique}
 
 Afin de déterminer un modèle pour l'ensemble du mouvement de notre système (notre essaim de deux robots), on s'intéresse d'abord au mouvement d'un seul robot. 
 
@@ -6,7 +6,7 @@ Le robot Pololu Zumo est une petite plate-forme robotique à chenilles de moins 
 
 Ce type de robot est appelé \textit{« differential-drive »}, signifiant que le mouvement est basé sur deux roues (ou chenilles dans notre cas) entraînées séparément et placées de chaque côté du corps du robot. Il peut ainsi changer de direction en faisant varier le taux de rotation relatif de ses roues et ne nécessite donc pas de mouvement de direction supplémentaire. Si les deux roues sont entraînées dans le même sens et à la même vitesse, le robot se déplace en ligne droite. Si les deux roues sont entraînées à la même vitesse dans des directions opposées, le robot tournera autour du point central de l'axe. \cite{Differential-drive-wikipedia-url}
 
-\subsection{Representing robot position - Représentation de la position du robot}
+\subsubsection{Representing robot position - Représentation de la position du robot}
 
 Nous modélisons le robot comme un corps rigide à chenilles, opérant sur un plan horizontal, homogène et faiblement cohésif. 
 
@@ -43,7 +43,7 @@ Afin de spécifier la position du robot sur le plan, nous établissons une relat
 
 Cette matrice peut être utilisée pour convertir le mouvement dans le cadre de référence global en mouvement dans le cadre de référence local. Cette opération est dénotée par $\dot{\xi_R} = R(\theta) \cdot \dot{\xi_I}$.
 
-\subsection{Forward kinematic models - Modèle cinématique}
+\subsubsection{Forward kinematic models - Modèle cinématique}
 
 Le robot possède deux roues, chacune de diamètre $r$. Étant donné un point $P$ situé entre les deux roues motrices, chaque roue est à une distance $l$ de $P$.
 
@@ -54,21 +54,13 @@ Le robot possède deux roues, chacune de diamètre $r$. Étant donné un point $
         \dot{x} \\
         \dot{y} \\
         \dot{\theta}
-        \end{array} \right ]= f \left ( l, r, \theta, \dot{\varphi_1}, \dot{\varphi_2} \right )
+        \end{array} \right ]= f \left ( l, r, \theta, \dot{\varphi_1}, \dot{\varphi_2} \right )\\
+        == \left [\begin{array}{c}
+        \dot{x} \\
+        \dot{y} \\
+        \dot{\theta}
+        \end{array} \right ]
 \end{equation}
 
-\subsection{Wheel kinematic constraints - Fixed standard wheel}
 
-\subsection{Robot kinematic constraints}
 
-\subsection{Path and trajectory considerations}
-
-$\\
-x_1=\frac{2x_T+d_x}{2}\\
-x_2=\frac{2x_T-d_x}{2}\\
-y_1=\frac{2y_T+d_y}{2}\\
-y_2=\frac{2y_T-d_y}{2}\\
-\delta\theta=\frac{(v_d-v_g)\delta t}{L}\\
-v_x=\dot{x}=\frac{v_g_x+v_d_x}{2}\\
-v_y=\dot{y}=\frac{v_g_y+v_d_y}{2}\\
-$
