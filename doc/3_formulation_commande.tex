@@ -28,8 +28,6 @@ Ensuite, un régulateur LQ permet de réguler notre système tout en assurant un
 
 Chaque robot lié à une balise Marvelmind Hedgehog retourne au régulateur LQ la position actuelle de nos deux robots afin de fermer la boucle et assurer le suivi des consignes et l'élimination des perturbations/bruits.
 
-
-
 Ensuite, pour assurer un bon suivi de consignes, chaque robot possède deux régulateurs PIDs, représenté dans la Figure \ref{fig:robot}. En plus de ça, ils possède deux PIDs supplémentaire pour l'asservissement de la vitesse de chaque roue, représenté dans la Figure \ref{fig:robot_pid}. 
 
 \begin{figure}[h!]
@@ -46,4 +44,9 @@ Ensuite, pour assurer un bon suivi de consignes, chaque robot possède deux rég
     \label{fig:robot_pid}
 \end{figure}
 
+\subsection{Problèmes rencontrés}
+\begin{itemize}
+    \item Nous avons trouvé les robots Pololu assez basiques. D'une part, faire du débogage était impossible du fait qu'il est basé sur un Arduino UNO et n'accepte qu'une connexion série (et la connexion avec la balise mobile est indispensable). Et d'autre part, nous avons essayé d'implémenter un système de \og \textit{data-logging} \fg{} en gardant les données sur l'EEPROM du processeur mais nous nous sommes rencontrés avec un robot qui ne réagit pas (\og \textit{unresponsible} \fg{}). Pour le réanimer, nous avons du utiliser le tutoriel disponible sur le site web du fabricant. \footnote{Reviving an unresponsive Zumo 32U4 - Pololu Zumo 32U4 Support page - https://www.pololu.com/docs/0J63/9}
+\end{itemize}
 \clearpage
+
